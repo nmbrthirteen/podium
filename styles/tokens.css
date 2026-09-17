@@ -1,0 +1,99 @@
+@import "tailwindcss";
+@import "./motion.css";
+
+:root {
+  color-scheme: light dark;
+  --canvas: light-dark(#f3f5f7, #0c1419);
+  --surface: light-dark(#ffffff, #14202a);
+  --inset: light-dark(#e9eef2, #101b23);
+  --ink: light-dark(#0e1a24, #e3ecf2);
+  --muted: light-dark(#4a5a68, #93a6b4);
+  --line: light-dark(#d6dee5, #243645);
+  --line-strong: light-dark(#758797, #5d7385);
+  --accent: light-dark(#0b6e69, #5cc8bf);
+  --accent-ink: light-dark(#ffffff, #04201e);
+  --accent-soft: light-dark(#e0f0ee, #12302e);
+  --danger: light-dark(#b42318, #ff8a7a);
+  --danger-soft: light-dark(#fdecea, #3a1714);
+  --focus: light-dark(#0b6e69, #5cc8bf);
+  --ring: light-dark(rgb(14 26 36 / 0.08), rgb(255 255 255 / 0.08));
+  --shadow-color: light-dark(rgb(14 26 36 / 0.05), transparent);
+  --scrim: light-dark(rgb(14 26 36 / 0.4), rgb(0 0 0 / 0.6));
+}
+
+.live {
+  color-scheme: dark;
+  --canvas: #081016;
+  --surface: #101c25;
+  --inset: #0b151c;
+  --ink: #eef4f8;
+  --muted: #9fb2c0;
+  --line: #22343f;
+  --line-strong: #5d7385;
+  --accent: #5cc8bf;
+  --accent-ink: #04201e;
+  --accent-soft: #12302e;
+  --danger: #ff8a7a;
+  --danger-soft: #3a1714;
+  --focus: #5cc8bf;
+  --ring: rgb(255 255 255 / 0.08);
+  --shadow-color: transparent;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-inset: var(--inset);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-focus: var(--focus);
+  --color-scrim: var(--scrim);
+  --font-display: var(--font-source-serif), Georgia, serif;
+  --font-sans: var(--font-source-sans), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --shadow-card: 0 0 0 1px var(--ring), 0 1px 2px var(--shadow-color), 0 4px 8px var(--shadow-color);
+  --shadow-control: inset 0 0 0 1px var(--line-strong);
+  --shadow-overlay: 0 0 0 1px var(--ring), 0 4px 12px var(--shadow-color), 0 12px 32px var(--shadow-color);
+}
+
+@theme {
+  --radius-card: 12px;
+  --radius-control: 8px;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}

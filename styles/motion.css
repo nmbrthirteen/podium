@@ -1,0 +1,271 @@
+:root {
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --motion-deliberate: 480ms;
+  --motion-stagger: 30ms;
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 1ms;
+    --motion-base: 1ms;
+    --motion-slow: 1ms;
+    --motion-deliberate: 1ms;
+    --motion-stagger: 0ms;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes draw-check {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pixel-on {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+@keyframes breathe-box {
+  0% {
+    transform: scale(0.85);
+  }
+  25%,
+  50% {
+    transform: scale(1);
+  }
+  75%,
+  100% {
+    transform: scale(0.85);
+  }
+}
+
+@keyframes breathe-slow {
+  0%,
+  100% {
+    transform: scale(0.85);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+@keyframes breathe-box-reduced {
+  0% {
+    opacity: 0.55;
+  }
+  25%,
+  50% {
+    opacity: 1;
+  }
+  75%,
+  100% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes breathe-slow-reduced {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.enter-stagger > * {
+  animation: rise var(--motion-slow) var(--ease-out) both;
+}
+
+.enter-stagger > :nth-child(2) {
+  animation-delay: var(--motion-stagger);
+}
+
+.enter-stagger > :nth-child(3) {
+  animation-delay: calc(var(--motion-stagger) * 2);
+}
+
+.enter-stagger > :nth-child(4) {
+  animation-delay: calc(var(--motion-stagger) * 3);
+}
+
+.enter-stagger > :nth-child(n + 5) {
+  animation-delay: calc(var(--motion-stagger) * 4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter-stagger > * {
+    animation-name: fade;
+  }
+}
+
+.check-draw {
+  animation: draw-check var(--motion-slow) var(--ease-out) both;
+}
+
+.pixel-cell {
+  opacity: 0.15;
+  animation: pixel-on 650ms var(--ease-in-out) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-cell {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+.hold-fill {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--motion-base) var(--ease-out);
+}
+
+[data-holding="true"] > .hold-fill {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1s linear;
+}
+
+[data-vaul-drawer][data-vaul-drawer-direction="bottom"] {
+  transition-duration: var(--motion-slow);
+  animation-duration: var(--motion-slow);
+  animation-timing-function: var(--ease-drawer);
+}
+
+[data-vaul-drawer][data-vaul-drawer-direction="bottom"][data-state="closed"] {
+  animation-duration: var(--motion-base);
+}
+
+[data-vaul-overlay][data-vaul-snap-points="false"] {
+  animation-duration: var(--motion-slow);
+}
+
+[data-vaul-overlay][data-vaul-snap-points="false"][data-state="closed"] {
+  animation-duration: var(--motion-base);
+}
+
+.breath-circle {
+  transform: scale(0.85);
+}
+
+.breath-circle[data-running="true"][data-pattern="box"] {
+  animation: breathe-box 16s var(--ease-in-out) infinite;
+}
+
+.breath-circle[data-running="true"][data-pattern="slow"] {
+  animation: breathe-slow 10s var(--ease-in-out) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breath-circle {
+    transform: none;
+    opacity: 0.55;
+  }
+
+  .breath-circle[data-running="true"][data-pattern="box"] {
+    animation-name: breathe-box-reduced;
+  }
+
+  .breath-circle[data-running="true"][data-pattern="slow"] {
+    animation-name: breathe-slow-reduced;
+  }
+}
+
+.press {
+  transition: transform 150ms var(--ease-out);
+}
+
+.press:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.ring-progress {
+  transition: stroke-dashoffset var(--motion-slow) var(--ease-out);
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.bar-grow {
+  transform-origin: left;
+  animation: bar-grow var(--motion-deliberate) var(--ease-out) both;
+}
+
+.handle-grip,
+.level-bar,
+.deck-dot {
+  transition: background-color var(--motion-fast) var(--ease-out);
+}
+
+.card-flip {
+  transition: transform var(--motion-base) var(--ease-out);
+}
+
+@keyframes listen {
+  from {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes listen-reduced {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.listen-ring {
+  opacity: 0.35;
+  animation: listen 1.6s var(--ease-out) infinite;
+}
+
+.listen-ring-late {
+  animation-delay: 0.8s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-flip {
+    transition: none;
+  }
+
+  .listen-ring {
+    transform: scale(1.15);
+    animation: listen-reduced 1.6s var(--ease-in-out) infinite;
+  }
+}

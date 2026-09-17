@@ -1,0 +1,55 @@
+{
+  "name": "podium",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Get ready for a talk, from first idea to the stage.",
+  "license": "AGPL-3.0-only",
+  "repository": "github:nmbrthirteen/podium",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "check": "biome check . && tsc --noEmit && next build",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "@base-ui/react": "1.8.0",
+    "@libsql/client": "0.18.0",
+    "@openrouter/ai-sdk-provider": "^3.0.0",
+    "ai": "^7.0.101",
+    "better-auth": "^1.7.5",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "drizzle-orm": "0.45.2",
+    "jszip": "3.10.2",
+    "motion": "13.3.0",
+    "next": "16.3.0",
+    "pdfjs-dist": "6.3.289",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "0.0.1",
+    "sonner": "2.0.8",
+    "tailwind-merge": "3.7.0",
+    "vaul": "1.1.2",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.13",
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "^26.5.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "drizzle-kit": "0.31.10",
+    "tailwindcss": "4.3.3",
+    "typescript": "^7.0.2",
+    "vitest": "5.0.1"
+  }
+}

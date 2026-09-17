@@ -1,0 +1,47 @@
+{
+  "brief": {
+    "title": "Boring databases win",
+    "type": "conference-talk",
+    "goal": "Engineers pick a plain relational database for their next new service.",
+    "audience": "Four hundred backend engineers excited about new distributed databases.",
+    "bigIdea": "The most boring database is usually the fastest path to a reliable product.",
+    "points": [
+      {
+        "text": "Most services never outgrow one Postgres node",
+        "example": "92% of our 140 services use under 50 GB"
+      },
+      {
+        "text": "Exotic stores add on-call pain",
+        "example": "Three outages last year came from one new store"
+      },
+      {
+        "text": "You can migrate later when the numbers demand it",
+        "example": "We moved one service after 4 years"
+      }
+    ],
+    "openingLine": "Our most reliable service runs on a database older than half of this room.",
+    "closingLine": "For your next service, start boring, measure, and move only when the numbers force you.",
+    "lengthMinutes": 30
+  },
+  "provider": "claude-cli",
+  "flagged": false,
+  "critique": {
+    "issues": [
+      {
+        "field": "audience",
+        "problem": "The brief never names what excites this crowd about distributed databases. Add the one claim they trust most, then answer it directly.",
+        "action": "Add one line naming their strongest reason for distributed stores, then counter it."
+      },
+      {
+        "field": "points",
+        "problem": "Point three shows one migration but not the numbers that triggered it.",
+        "action": "Add the specific metric or threshold that told you it was time to move."
+      },
+      {
+        "field": "bigIdea",
+        "problem": "The idea favors boring choices but never says what counts as boring.",
+        "action": "Add a short definition or example of what makes a database boring."
+      }
+    ]
+  }
+}

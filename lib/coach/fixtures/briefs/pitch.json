@@ -1,0 +1,38 @@
+{
+  "brief": {
+    "title": "Seed pitch for Tallyboard",
+    "type": "pitch",
+    "goal": "Investors book a second meeting to see the pilot data.",
+    "audience": "Seed investors who have seen many scheduling tools and doubt the market size.",
+    "bigIdea": "Clinics lose a day a week to scheduling, and we give it back.",
+    "points": [
+      {
+        "text": "Front desks spend hours on phone scheduling",
+        "example": "Pilot clinics logged 9 hours a week"
+      },
+      {
+        "text": "Our pilot cut no-shows",
+        "example": "No-shows fell from 18% to 7% in 3 clinics"
+      }
+    ],
+    "openingLine": "Every Monday, Dana at Riverside Clinic spends four hours on the phone moving appointments.",
+    "closingLine": "Give us 30 minutes next week, and we will show you the pilot numbers clinic by clinic.",
+    "lengthMinutes": 5
+  },
+  "provider": "claude-cli",
+  "flagged": false,
+  "critique": {
+    "issues": [
+      {
+        "field": "audience",
+        "problem": "Investors doubt the market size, but no part of the brief states how many clinics need this or how big the market is.",
+        "action": "Add one line stating the total number of target clinics or the market size in dollars."
+      },
+      {
+        "field": "points",
+        "problem": "Point 2 proves a drop in no-shows, which is a different claim than the big idea about reclaiming lost scheduling time.",
+        "action": "Replace the no-show metric with a time-saved metric, or add a line linking fewer no-shows to hours saved."
+      }
+    ]
+  }
+}

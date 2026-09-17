@@ -1,0 +1,1 @@
+ALTER TABLE `talks` ADD `completed_at` text;

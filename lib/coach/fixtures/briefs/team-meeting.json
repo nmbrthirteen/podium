@@ -1,0 +1,34 @@
+{
+  "brief": {
+    "title": "Release freeze decision",
+    "type": "team-meeting",
+    "goal": "The team agrees to freeze releases for the week of the launch.",
+    "audience": "Twelve engineers who dislike freezes because they slow down fixes.",
+    "bigIdea": "A one-week freeze keeps the launch stable and costs us almost nothing.",
+    "points": [
+      {
+        "text": "Last launch broke on a late merge",
+        "example": "Two hours of downtime from one Friday deploy"
+      }
+    ],
+    "openingLine": "Last launch, one Friday merge cost us two hours of downtime.",
+    "closingLine": "Freeze releases from the 20th to the 27th, and page me for any exception.",
+    "lengthMinutes": 5
+  },
+  "provider": "claude-cli",
+  "flagged": false,
+  "critique": {
+    "issues": [
+      {
+        "field": "points",
+        "problem": "The single point proves the freeze reduces risk, but never shows why it costs the team almost nothing.",
+        "action": "Add a point that shows engineers can still ship urgent fixes through an exception path."
+      },
+      {
+        "field": "bigIdea",
+        "problem": "The claim that the freeze costs almost nothing will meet resistance from engineers who believe freezes slow down fixes.",
+        "action": "Soften the claim or back it with a point about how exceptions keep urgent work moving."
+      }
+    ]
+  }
+}

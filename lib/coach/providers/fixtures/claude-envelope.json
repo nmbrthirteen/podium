@@ -1,0 +1,7 @@
+{
+  "is_error": false,
+  "structured_output": {
+    "greeting": "Hello there, how are you?",
+    "instructions": "You return structured data only."
+  }
+}

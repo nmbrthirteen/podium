@@ -1,0 +1,38 @@
+{
+  "brief": {
+    "title": "Q3 board update",
+    "type": "exec-update",
+    "goal": "Approve two more support engineers before October.",
+    "audience": "Five board members who think support costs are already too high.",
+    "bigIdea": "Two support hires now cut churn faster than any product change.",
+    "points": [
+      {
+        "text": "Churn rose after ticket wait times doubled",
+        "example": "Churn went from 3% to 7% in one quarter"
+      },
+      {
+        "text": "Hiring is cheaper than lost revenue",
+        "example": "Two hires cost $240k and churn cost $900k"
+      }
+    ],
+    "openingLine": "We lost 41 customers this quarter, and 30 of them waited over two days for support.",
+    "closingLine": "Approve two support hires today, and we cut churn before the holiday renewals.",
+    "lengthMinutes": 10
+  },
+  "provider": "claude-cli",
+  "flagged": false,
+  "critique": {
+    "issues": [
+      {
+        "field": "points",
+        "problem": "The big idea claims hires beat any product change, but no point compares hiring speed or cost to a product fix.",
+        "action": "Add a point that shows how long a product fix would take and what it would cost, then compare it to the hires."
+      },
+      {
+        "field": "audience",
+        "problem": "The board already believes support costs are too high, but the points only compare hire cost to churn loss, not to the current budget.",
+        "action": "Add a line showing support spend as a share of revenue to show the raise is small next to the risk."
+      }
+    ]
+  }
+}

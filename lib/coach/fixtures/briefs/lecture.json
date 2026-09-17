@@ -1,0 +1,42 @@
+{
+  "brief": {
+    "title": "How memory fails on stage",
+    "type": "lecture",
+    "goal": "Students practice talks out loud instead of rereading notes.",
+    "audience": "Sixty second-year psychology students who prepare by rereading slides.",
+    "bigIdea": "Recall practice protects memory under stress while rereading does not.",
+    "points": [
+      {
+        "text": "Stress blocks retrieval of reread material",
+        "example": "Science 2016 study with 120 participants"
+      },
+      {
+        "text": "Testing yourself builds durable memory",
+        "example": "Retrieval practice beat rereading by 50% after one week"
+      },
+      {
+        "text": "Spacing sessions multiplies the effect",
+        "example": "Three short sessions beat one long session"
+      }
+    ],
+    "openingLine": "Think of the last time your mind went blank in front of a room.",
+    "closingLine": "Before your next talk, close the slides and say it out loud three times.",
+    "lengthMinutes": 45
+  },
+  "provider": "claude-cli",
+  "flagged": false,
+  "critique": {
+    "issues": [
+      {
+        "field": "points",
+        "problem": "Point three, on spacing, does not connect back to the stress versus rereading claim in the big idea.",
+        "action": "Cut point three, or rewrite it to show how spacing helps recall specifically under stress."
+      },
+      {
+        "field": "audience",
+        "problem": "These students reread because it feels easy and familiar, but the brief never names that feeling.",
+        "action": "Add a line stating that rereading feels productive even though it does not build real recall."
+      }
+    ]
+  }
+}
