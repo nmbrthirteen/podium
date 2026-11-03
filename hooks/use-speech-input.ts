@@ -18,13 +18,17 @@ type SpeechRecognition = {
 
 type RecognitionConstructor = new () => SpeechRecognition;
 
-function recognitionConstructor(): RecognitionConstructor | null {
-  if (typeof window === 'undefined') return null;
-  const scoped = window as Window & {
+declare global {
+  interface Window {
     SpeechRecognition?: RecognitionConstructor;
     webkitSpeechRecognition?: RecognitionConstructor;
-  };
-  return scoped.SpeechRecognition ?? scoped.webkitSpeechRecognition ?? null;
+  }
+}
+
+function recognitionConstructor(): RecognitionConstructor | null {
+  if (typeof window === 'undefined') return null;
+
+  return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
 }
 
 const subscribe = () => () => {};
@@ -35,6 +39,7 @@ export function useSpeechInput(onFinal: (text: string) => void) {
     () => recognitionConstructor() !== null,
     () => null,
   );
+
   const [listening, setListening] = useState(false);
   const [interim, setInterim] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +53,7 @@ export function useSpeechInput(onFinal: (text: string) => void) {
 
   const start = useCallback(() => {
     const Recognition = recognitionConstructor();
+
     if (!Recognition) return;
     recognitionRef.current?.abort();
 
@@ -57,14 +63,18 @@ export function useSpeechInput(onFinal: (text: string) => void) {
     recognition.lang = navigator.language || 'en-US';
     recognition.onresult = event => {
       let pending = '';
+
       for (let index = event.resultIndex; index < event.results.length; index += 1) {
         const result = event.results[index];
         const text = result?.[0]?.transcript ?? '';
+
         if (result?.isFinal) onFinalRef.current(text.trim());
         else pending += text;
       }
+
       setInterim(pending.trim());
     };
+
     recognition.onerror = event => {
       if (event.error === 'aborted' || event.error === 'no-speech') return;
       setError(
@@ -73,14 +83,17 @@ export function useSpeechInput(onFinal: (text: string) => void) {
           : 'Listening stopped. Tap the mic to try again, or type instead.',
       );
     };
+
     recognition.onend = () => {
       setListening(false);
       setInterim('');
+
       if (recognitionRef.current === recognition) recognitionRef.current = null;
     };
 
     recognitionRef.current = recognition;
     setError(null);
+
     try {
       recognition.start();
       setListening(true);

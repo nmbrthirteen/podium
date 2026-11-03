@@ -16,6 +16,7 @@ import type { LinkState } from './link-chips';
 const emptyKnown = { title: '', goal: '', audience: '', bigIdea: '', openingLine: '', closingLine: '' };
 const pageSchema = z.object({ url: z.string(), title: z.string(), text: z.string() });
 const errorSchema = z.object({ error: z.string() });
+
 type Page = z.infer<typeof pageSchema>;
 
 export function AddTalkScreen() {
@@ -41,6 +42,7 @@ export function AddTalkScreen() {
       ...current.filter(link => link.url !== url),
       { url, status: 'reading', title: linkLabel(url), error: null },
     ]);
+
     const task = fetch('/api/links', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -48,13 +50,17 @@ export function AddTalkScreen() {
     })
       .then(async response => {
         const body: unknown = await response.json().catch(() => null);
+
         if (dismissed.current.has(url)) return;
         const page = pageSchema.safeParse(body);
+
         if (response.ok && page.success) {
           pages.current.set(url, page.data);
           updateLink(url, { status: 'ready', title: page.data.title });
+
           return;
         }
+
         const failure = errorSchema.safeParse(body);
         updateLink(url, {
           status: 'failed',
@@ -62,6 +68,7 @@ export function AddTalkScreen() {
         });
       })
       .catch(() => updateLink(url, { status: 'failed', error: 'Could not reach the app. Check that it is running.' }));
+
     pending.current.set(url, task);
   };
 
@@ -87,30 +94,37 @@ export function AddTalkScreen() {
     const onPaste = (event: ClipboardEvent) => {
       if (event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLInputElement) return;
       const urls = findUrls(event.clipboardData?.getData('text') ?? '');
+
       if (urls.length === 0) return;
       event.preventDefault();
       addLinksRef.current(urls, true);
     };
+
     window.addEventListener('paste', onPaste);
+
     return () => window.removeEventListener('paste', onPaste);
   }, []);
 
   const submit = async () => {
     if (!text.trim() && !deck && links.length === 0) {
       setError('Say or write a few words about the talk, or add slides or a link.');
+
       return;
     }
+
     setError(null);
     cancelled.current = false;
     setReadingLinks(true);
     await Promise.all(pending.current.values());
     setReadingLinks(false);
 
-    const references = [...pages.current.entries()]
-      .filter(([url]) => !dismissed.current.has(url))
-      .map(([, page]) => page);
+    const references = [...pages.current.entries()].flatMap(([url, page]) =>
+      dismissed.current.has(url) ? [] : [page],
+    );
+
     const now = new Date();
     const today = toDay(now);
+
     const coach = await prefill.run({
       text,
       deckText: deck ? deckTextForCoach(deck.slides) : '',
@@ -118,6 +132,7 @@ export function AddTalkScreen() {
       today: todayForCoach(now, today),
       known: emptyKnown,
     });
+
     if (cancelled.current) return;
 
     const firstSlide = deck?.slides[0];
@@ -126,6 +141,7 @@ export function AddTalkScreen() {
       const result = await createTalk(
         buildTalkInput({ id: talkId, text, today, now, coach, deckTitle: fallbackTitle }),
       );
+
       setError(result.error);
     });
   };

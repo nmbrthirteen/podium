@@ -13,6 +13,7 @@ type SavedPanelProps = {
 
 export function SavedPanel({ title, talkId, children, actions }: SavedPanelProps) {
   const headingId = useId();
+
   return (
     <section aria-labelledby={headingId} className="flex flex-col items-start gap-4">
       <div className="flex items-center gap-3">

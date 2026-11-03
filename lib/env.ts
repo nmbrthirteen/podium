@@ -20,6 +20,7 @@ export function readEnv(source: Record<string, string | undefined> = process.env
   const blankToUndefined = Object.fromEntries(
     Object.entries(source).map(([key, value]) => [key, value === '' ? undefined : value]),
   );
+
   return envSchema.parse(blankToUndefined);
 }
 

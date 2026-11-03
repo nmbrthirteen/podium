@@ -11,7 +11,7 @@ import { requireRunAccess, requireTalkAccess } from '@/lib/auth/talk-access';
 import { runs } from '@/lib/db/schema';
 import { writeSetting } from '@/lib/settings';
 import { completePlannedSession } from './complete-session';
-import { markFocusFixedFor, refreshNextFocus } from './next-focus';
+import { markFocusFixedFor, refreshNextFocusOrRecordFailure } from './next-focus';
 import { summarizeRun } from './summary';
 
 const timingsSchema = z
@@ -38,8 +38,10 @@ export async function finishRun(
     .where(eq(runs.id, runId));
 
   const bundle = await loadTalkBundle(run.talkId, userId);
+
   if (!bundle) return { summary: '' };
   revalidateTalk(run.talkId);
+
   return { summary: summarizeRun(input.timings, bundle.sections, pickForBundle(bundle)) };
 }
 
@@ -66,7 +68,8 @@ export async function saveRunDebrief(runId: string, raw: z.input<typeof debriefS
 
   after(async () => {
     const bundle = await loadTalkBundle(run.talkId, userId);
-    if (bundle) await refreshNextFocus(run.talkId, bundle.runs, userId).catch(() => undefined);
+
+    if (bundle) await refreshNextFocusOrRecordFailure(run.talkId, bundle.runs, userId);
     revalidateTalk(run.talkId);
   });
 
@@ -81,5 +84,13 @@ export async function markExplainersSeen() {
 export async function markFocusFixed(talkId: string, focus: string) {
   await requireTalkAccess(talkId);
   await markFocusFixedFor(talkId, z.string().min(1).max(200).parse(focus));
+  revalidateTalk(talkId);
+}
+
+export async function retryNextFocus(talkId: string) {
+  const { userId } = await requireTalkAccess(talkId);
+  const bundle = await loadTalkBundle(talkId, userId);
+
+  if (bundle) await refreshNextFocusOrRecordFailure(talkId, bundle.runs, userId);
   revalidateTalk(talkId);
 }

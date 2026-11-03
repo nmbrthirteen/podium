@@ -63,8 +63,10 @@ export function AddLinkButton({ disabled, onAdd }: { disabled: boolean; onAdd: (
     const trimmed = value.trim();
     setValue('');
     setTyping(false);
+
     if (!trimmed) return;
     const urls = findUrls(/^(https?:\/\/|www\.)/i.test(trimmed) ? trimmed : `https://${trimmed}`);
+
     if (urls.length > 0) onAdd(urls);
   };
 
@@ -97,13 +99,17 @@ export function AddLinkButton({ disabled, onAdd }: { disabled: boolean; onAdd: (
       disabled={disabled}
       onClick={() => {
         const clipboard = navigator.clipboard;
+
         if (!clipboard?.readText) {
           setTyping(true);
+
           return;
         }
+
         clipboard.readText().then(
           text => {
             const urls = findUrls(text);
+
             if (urls.length > 0) onAdd(urls);
             else setTyping(true);
           },

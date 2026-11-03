@@ -7,6 +7,7 @@ import { briefContextSchema } from '../tasks/brief-context';
 import { briefCritique } from '../tasks/brief-critique';
 
 const folder = path.join(__dirname, 'briefs');
+
 const fixtureSchema = z.object({
   brief: briefContextSchema,
   provider: z.string(),

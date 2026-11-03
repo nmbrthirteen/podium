@@ -22,9 +22,11 @@ export function cycleSeconds(pattern: BreathingPattern) {
 export function breathPhaseAt(pattern: BreathingPattern, elapsedSeconds: number): BreathPhase {
   const steps = patterns[pattern];
   let offset = elapsedSeconds % cycleSeconds(pattern);
+
   for (const step of steps) {
     if (offset < step.seconds) return { label: step.label, secondsLeft: Math.ceil(step.seconds - offset) };
     offset -= step.seconds;
   }
+
   return { label: steps[0]?.label ?? 'Breathe in', secondsLeft: steps[0]?.seconds ?? 4 };
 }

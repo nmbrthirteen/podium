@@ -9,6 +9,7 @@ import { readEnv } from '@/lib/env';
 async function createAuth() {
   const db = await database();
   const env = readEnv();
+
   const google =
     env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
       ? { google: { clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET } }
@@ -33,10 +34,12 @@ let authInstance: Promise<Auth> | null = null;
 
 export function getAuth() {
   authInstance ??= createAuth();
+
   return authInstance;
 }
 
 export function googleSignInEnabled() {
   const env = readEnv();
+
   return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
 }

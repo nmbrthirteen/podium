@@ -17,6 +17,7 @@ describe('talkProgress', () => {
       { ...run('open', '2026-09-15T11:00:00Z', 60, 60, 0), endedAt: null },
       { id: 'qa', kind: 'qa-drill', startedAt: '2026-09-15T12:00:00Z', endedAt: 'x', sectionTimings: [] },
     ]);
+
     expect(progress).toEqual({
       lastRun: { seconds: 300, budgetSeconds: 240, peeks: 2 },
       peeksPerRun: [

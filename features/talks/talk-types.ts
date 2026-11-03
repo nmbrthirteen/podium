@@ -76,22 +76,29 @@ function roundToStep(value: number) {
 
 function exactSplit(template: TemplateSection[], lengthMinutes: number) {
   const baseTotal = template.reduce((sum, section) => sum + section.minutes, 0);
+
   const scaled = template.map(section => ({
     title: section.title,
     minutes: Math.round(((section.minutes * lengthMinutes) / baseTotal) * 100) / 100,
   }));
+
   const drift = lengthMinutes - scaled.reduce((sum, section) => sum + section.minutes, 0);
   const last = scaled.at(-1);
+
   if (last) last.minutes = Math.round((last.minutes + drift) * 100) / 100;
+
   return scaled;
 }
 
 export function scaleTemplate(type: TalkType, lengthMinutes: number): TemplateSection[] {
   const template = talkTemplates[type];
+
   if (template.length === 0) return [];
+
   if (lengthMinutes < template.length * step) return exactSplit(template, lengthMinutes);
 
   const baseTotal = template.reduce((sum, section) => sum + section.minutes, 0);
+
   const scaled = template.map(section => ({
     title: section.title,
     minutes: Math.max(step, roundToStep((section.minutes * lengthMinutes) / baseTotal)),
@@ -101,16 +108,20 @@ export function scaleTemplate(type: TalkType, lengthMinutes: number): TemplateSe
   const byLength = [...scaled].sort((a, b) => b.minutes - a.minutes);
   let index = 0;
   let guard = 0;
+
   while (Math.abs(drift) >= step && guard < 1000) {
     const target = byLength[index % byLength.length];
+
     if (target && (drift > 0 || target.minutes > step)) {
       target.minutes += drift > 0 ? step : -step;
       drift += drift > 0 ? -step : step;
     }
+
     index += 1;
     guard += 1;
   }
 
   const total = scaled.reduce((sum, section) => sum + section.minutes, 0);
+
   return Math.abs(total - lengthMinutes) < 0.001 ? scaled : exactSplit(template, lengthMinutes);
 }

@@ -17,15 +17,18 @@ async function connect(url: string, authToken: string | undefined, local: boolea
   const client = createClient({ url, authToken });
   const db = drizzle(client, { schema });
   await migrate(db, { migrationsFolder: migrationsDir() });
+
   return db;
 }
 
 export function database() {
   const { url, authToken, local } = databaseConfig(readEnv());
   let connection = connections.get(url);
+
   if (!connection) {
     connection = connect(url, authToken, local);
     connections.set(url, connection);
   }
+
   return connection;
 }

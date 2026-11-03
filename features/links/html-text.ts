@@ -1,6 +1,13 @@
 export const maxPageCharacters = 20_000;
 
-const namedEntities: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+const namedEntities = new Map([
+  ['amp', '&'],
+  ['lt', '<'],
+  ['gt', '>'],
+  ['quot', '"'],
+  ['apos', "'"],
+  ['nbsp', ' '],
+]);
 
 function codePoint(value: number, fallback: string) {
   return Number.isInteger(value) && value > 0 && value < 0x110000 ? String.fromCodePoint(value) : fallback;
@@ -9,9 +16,12 @@ function codePoint(value: number, fallback: string) {
 export function decodeEntities(text: string) {
   return text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, code: string) => {
     const lower = code.toLowerCase();
+
     if (lower.startsWith('#x')) return codePoint(Number.parseInt(lower.slice(2), 16), match);
+
     if (lower.startsWith('#')) return codePoint(Number.parseInt(lower.slice(1), 10), match);
-    return namedEntities[lower] ?? match;
+
+    return namedEntities.get(lower) ?? match;
   });
 }
 
@@ -19,8 +29,10 @@ function metaDescription(html: string) {
   for (const tag of html.match(/<meta\b[^>]*>/gi) ?? []) {
     if (!/(?:name|property)=["'](?:og:)?description["']/i.test(tag)) continue;
     const content = tag.match(/content=["']([^"']*)["']/i)?.[1];
+
     if (content?.trim()) return decodeEntities(content).trim();
   }
+
   return '';
 }
 
@@ -30,8 +42,10 @@ const lineBreaks = /<\/?(?:p|div|section|article|main|li|ul|ol|h[1-6]|br|tr|tabl
 function contentRegion(html: string) {
   for (const tag of ['article', 'main', 'body']) {
     const inner = html.match(new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*)<\\/${tag}>`, 'i'))?.[1];
+
     if (inner?.trim()) return inner;
   }
+
   return html;
 }
 
@@ -39,6 +53,7 @@ export function extractPage(html: string) {
   const title = decodeEntities(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? '')
     .replace(/\s+/g, ' ')
     .trim();
+
   const lines = decodeEntities(
     contentRegion(html)
       .replace(/<!--[\s\S]*?-->/g, ' ')
@@ -57,5 +72,6 @@ export function extractPage(html: string) {
     .filter(Boolean);
 
   const text = [metaDescription(html), ...lines].filter(Boolean).join('\n');
+
   return { title, text: text.slice(0, maxPageCharacters) };
 }

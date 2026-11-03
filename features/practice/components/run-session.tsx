@@ -37,11 +37,15 @@ type RunSessionProps = {
 export function RunSession(props: RunSessionProps) {
   const { talkId, runId, kind, cards, listenerQuestions } = props;
   const recorded = kind === 'recorded-run';
+
   const [phase, setPhase] = useState<Phase>(() => {
     if (props.initialPhase !== 'fresh') return props.initialPhase;
+
     if (!props.explainersSeen) return 'explainers';
+
     return recorded ? 'predict' : 'ready';
   });
+
   const [prediction, setPrediction] = useState(props.initialPrediction);
   const [summary, setSummary] = useState(props.initialSummary);
   const [timings, setTimings] = useState(props.initialTimings);
@@ -79,15 +83,19 @@ export function RunSession(props: RunSessionProps) {
   const end = async (result: RunResult) => {
     setPhase('saving');
     setError(null);
+
     try {
       if (recorded && recordWithCamera) {
         const blob = await recorder.stop();
+
         if (blob) {
           const response = await fetch(`/api/recordings/${runId}`, { method: 'POST', body: blob });
+
           if (response.ok) setRecordingUrl(`/api/recordings/${runId}?t=${Date.now()}`);
           else setError('The recording did not save. Your run and debrief still save.');
         }
       }
+
       const saved = await finishRun(runId, result);
       setSummary(saved.summary);
       setTimings(result.timings);

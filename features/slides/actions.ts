@@ -19,12 +19,14 @@ const draftSchema = slideContentSchema.extend({ sectionId: z.string() });
 async function talkSectionIds(talkId: string) {
   const { db } = await requireTalkAccess(talkId);
   const rows = await db.select({ id: sections.id }).from(sections).where(eq(sections.talkId, talkId));
+
   return { db, sectionIds: new Set(rows.map(row => row.id)) };
 }
 
 export async function replaceSlideDrafts(talkId: string, raw: z.input<typeof draftSchema>[]) {
   const drafts = z.array(draftSchema).max(60).parse(raw);
   const { db, sectionIds } = await talkSectionIds(talkId);
+
   const rows = drafts.map((draft, position) => ({
     id: newId(),
     talkId,
@@ -38,9 +40,11 @@ export async function replaceSlideDrafts(talkId: string, raw: z.input<typeof dra
 
   await db.transaction(async tx => {
     await tx.delete(slideDrafts).where(eq(slideDrafts.talkId, talkId));
+
     if (rows.length > 0) await tx.insert(slideDrafts).values(rows);
   });
   revalidateTalk(talkId);
+
   return rows;
 }
 
@@ -67,11 +71,14 @@ export async function deleteSlideDraft(talkId: string, slideId: string) {
 export async function addSlideDraft(talkId: string, rawSectionId: string) {
   const sectionId = z.string().parse(rawSectionId);
   const { db, sectionIds } = await talkSectionIds(talkId);
+
   const existing = await db
     .select({ position: slideDrafts.position })
     .from(slideDrafts)
     .where(eq(slideDrafts.talkId, talkId));
+
   const points: string[] = [];
+
   const row = {
     id: newId(),
     talkId,
@@ -82,7 +89,9 @@ export async function addSlideDraft(talkId: string, rawSectionId: string) {
     visual: '',
     script: '',
   };
+
   await db.insert(slideDrafts).values(row);
   revalidateTalk(talkId);
+
   return row;
 }

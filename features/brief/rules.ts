@@ -33,6 +33,7 @@ export function endsWeak(closing: string) {
     .trim()
     .toLowerCase()
     .replace(/[\s.!?,;:'")\]]+$/, '');
+
   return weakClosing.test(normalized);
 }
 
@@ -40,6 +41,7 @@ export function briefRules(input: BriefRuleInput): RuleIssue[] {
   const issues: RuleIssue[] = [];
 
   const bigIdeaWords = wordCount(input.bigIdea);
+
   if (bigIdeaWords > 15) {
     issues.push({
       id: 'big-idea-length',

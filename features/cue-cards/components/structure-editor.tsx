@@ -56,12 +56,16 @@ export function StructureEditor({ talk, sections, slides, deckId, context }: Str
       },
       { fresh: true },
     );
+
     if (!output) return;
 
     const generated = new Map(output.sections.map(section => [section.id, section]));
+
     const next = cards.map(card => {
       const match = generated.get(card.id);
+
       if (!match) return card;
+
       return {
         ...card,
         keywords: [...new Set(match.keywords.map(keyword => keyword.trim()).filter(Boolean))].slice(0, 7),
@@ -69,6 +73,7 @@ export function StructureEditor({ talk, sections, slides, deckId, context }: Str
         slideNumbers: match.slideNumbers,
       };
     });
+
     setCards(next);
     await applyCoachCards(
       talk.id,
@@ -90,6 +95,7 @@ export function StructureEditor({ talk, sections, slides, deckId, context }: Str
     if (!needsCards || autoFilled.current) return;
     autoFilled.current = true;
     void fillRef.current();
+
     return () => {
       autoFilled.current = false;
     };
@@ -102,8 +108,10 @@ export function StructureEditor({ talk, sections, slides, deckId, context }: Str
     const updates = [boundary, boundary + 1].flatMap(index => {
       const card = cards[index];
       const value = minutes[index];
+
       return card && value !== undefined ? [{ id: card.id, minutes: value }] : [];
     });
+
     if (updates.length > 0) void saveSectionMinutes(talk.id, updates);
   };
 

@@ -27,8 +27,10 @@ export function TalkDetails({ talk }: { talk: Talk }) {
   const [nervousness, setNervousness] = useState(String(talk.nervousness));
 
   const save = (patch: Parameters<typeof saveTalkDetails>[1]) => void saveTalkDetails(talk.id, patch);
+
   const commitSchedule = () => {
     const minutes = Number.parseInt(length, 10);
+
     if (!date || !time || !(minutes >= 1 && minutes <= 600)) return;
     save({ startsAt: `${date}T${time}`, lengthMinutes: minutes });
   };
@@ -73,6 +75,7 @@ export function TalkDetails({ talk }: { talk: Talk }) {
                   setType(pendingType);
                   save({ type: pendingType });
                 }
+
                 setPendingType(null);
               }}
             >

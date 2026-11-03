@@ -18,6 +18,7 @@ export function StageNav({ talkId, pathname }: { talkId: string; pathname: strin
           const href = `/talks/${talkId}/${page.segment}`;
           const current = isCurrentPage(pathname, href);
           const Icon = page.icon;
+
           return (
             <li key={page.segment} className="flex-1">
               <Link

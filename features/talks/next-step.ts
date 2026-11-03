@@ -4,6 +4,7 @@ import { daysBetween, formatDay, talkDayOf } from '@/lib/dates';
 import { capitalize, pluralize } from '@/lib/utils';
 
 export type NextStepAction = 'practice' | 'present' | 'debrief' | 'done';
+
 export type NextStep = { when: string; task: string; action: NextStepAction };
 
 export type NextStepInput = {
@@ -25,6 +26,7 @@ export function describeNextStep({ startsAt, today, pick, sections, debriefed }:
   }
 
   const label = nextStepText(pick, sections);
+
   return {
     when,
     task: `${capitalize(label)}, ${pluralize(pick.minutes, 'minute')}`,

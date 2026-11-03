@@ -3,6 +3,7 @@
 import { Checklist } from '@/components/ui/checklist';
 
 export const checkIds = ['opening', 'close', 'room', 'big-idea'] as const;
+
 export type CheckId = (typeof checkIds)[number];
 
 type TalkDayChecklistProps = {
@@ -21,6 +22,7 @@ export function TalkDayChecklist({ done, onToggle, openingLine, closingLine, big
       label="Final check"
       onToggle={(id, checked) => {
         const check = checkIds.find(item => item === id);
+
         if (check) onToggle(check, checked);
       }}
       items={[

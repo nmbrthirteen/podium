@@ -36,6 +36,7 @@ export type SessionPick = {
 
 function isWeakTiming(timing: SectionTiming) {
   const overrun = timing.budgetSeconds > 0 ? (timing.seconds - timing.budgetSeconds) / timing.budgetSeconds : 0;
+
   return timing.peeks >= 3 || overrun >= 0.2;
 }
 
@@ -56,6 +57,7 @@ export function pickSession(input: PickInput): SessionPick {
 
   const unplanned = (kind: SessionKind, reason: PickReason, sectionId: string | null = null): SessionPick => {
     const sectionMinutes = input.sections.find(section => section.id === sectionId)?.minutes ?? 0;
+
     return {
       kind,
       sectionId,
@@ -66,13 +68,16 @@ export function pickSession(input: PickInput): SessionPick {
   };
 
   const fullRuns = input.runs.filter(run => run.kind === 'full-run').length;
+
   if (fullRuns === 0) return unplanned('full-run', 'first-full-run');
 
   const lastTimed = [...input.runs].reverse().find(run => run.sectionTimings.length > 0);
+
   const weakest = lastTimed?.sectionTimings
     .filter(isWeakTiming)
     .filter(timing => input.sections.some(section => section.id === timing.sectionId))
     .sort((a, b) => sectionScore(b) - sectionScore(a))[0];
+
   if (weakest) return unplanned('section-loop', 'weak-section', weakest.sectionId);
 
   if (fullRuns >= 2 && !input.runs.some(run => run.kind === 'recorded-run')) {
@@ -80,6 +85,7 @@ export function pickSession(input: PickInput): SessionPick {
   }
 
   const daysAway = daysBetween(input.today, input.talkDay);
+
   if (daysAway >= 0 && daysAway <= 2 && !input.runs.some(run => run.kind === 'dress-rehearsal')) {
     return unplanned('dress-rehearsal', 'dress');
   }

@@ -5,8 +5,11 @@ export const maxDeckBytes = 100 * 1024 * 1024;
 
 export function deckKindOf(fileName: string): DeckKind | null {
   const lower = fileName.toLowerCase();
+
   if (lower.endsWith('.pptx')) return 'pptx';
+
   if (lower.endsWith('.pdf')) return 'pdf';
+
   return null;
 }
 

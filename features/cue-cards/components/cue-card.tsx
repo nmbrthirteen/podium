@@ -102,6 +102,7 @@ function CardContent({
   size: 'md' | 'lg';
 }) {
   const verbatim = holdsVerbatim ? section.verbatim.trim() : '';
+
   if (!verbatim && section.keywords.length === 0) {
     return <p className="text-muted">No keywords yet</p>;
   }

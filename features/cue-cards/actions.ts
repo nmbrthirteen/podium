@@ -25,6 +25,7 @@ export async function saveSection(talkId: string, sectionId: string, rawPatch: z
     .update(sections)
     .set(patch)
     .where(and(eq(sections.id, sectionId), eq(sections.talkId, talkId)));
+
   if (patch.minutes !== undefined) await rebuildPlan(db, talkId);
   revalidateTalk(talkId);
 }
@@ -37,12 +38,14 @@ const minutesSchema = z
 export async function saveSectionMinutes(talkId: string, rawUpdates: z.input<typeof minutesSchema>) {
   const updates = minutesSchema.parse(rawUpdates);
   const { db } = await requireTalkAccess(talkId);
+
   for (const update of updates) {
     await db
       .update(sections)
       .set({ minutes: update.minutes })
       .where(and(eq(sections.id, update.id), eq(sections.talkId, talkId)));
   }
+
   await rebuildPlan(db, talkId);
   revalidateTalk(talkId);
 }
@@ -66,6 +69,7 @@ const coachCardsSchema = z.array(
 export async function applyCoachCards(talkId: string, rawCards: z.input<typeof coachCardsSchema>) {
   const cards = coachCardsSchema.parse(rawCards);
   const { db } = await requireTalkAccess(talkId);
+
   for (const card of cards) {
     await db
       .update(sections)
@@ -76,5 +80,6 @@ export async function applyCoachCards(talkId: string, rawCards: z.input<typeof c
       })
       .where(and(eq(sections.id, card.id), eq(sections.talkId, talkId)));
   }
+
   revalidateTalk(talkId);
 }

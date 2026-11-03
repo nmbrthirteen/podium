@@ -13,22 +13,27 @@ export async function completePlannedSession(
   sectionId: string | null,
 ) {
   const db = await database();
+
   if (sessionId) {
     await db
       .update(planSessions)
       .set({ completedRunId: runId })
       .where(and(eq(planSessions.id, sessionId), eq(planSessions.talkId, talkId), isNull(planSessions.completedRunId)));
+
     return;
   }
 
   const today = toDay(new Date());
+
   const candidates = await db
     .select()
     .from(planSessions)
     .where(and(eq(planSessions.talkId, talkId), eq(planSessions.kind, kind), isNull(planSessions.completedRunId)));
+
   const match = candidates
     .filter(session => session.day <= today && (kind !== 'section-loop' || session.sectionId === sectionId))
     .sort((a, b) => a.day.localeCompare(b.day) || a.position - b.position)[0];
+
   if (match) {
     await db.update(planSessions).set({ completedRunId: runId }).where(eq(planSessions.id, match.id));
   }

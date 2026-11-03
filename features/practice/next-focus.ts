@@ -14,15 +14,21 @@ const focusSchema = z.object({
   kind: z.enum(sessionKinds),
   runId: z.string(),
 });
+
 export type StoredFocus = z.infer<typeof focusSchema>;
 
 const fixedSchema = z.array(z.string());
 
 export const focusKey = (talkId: string) => `next-focus:${talkId}`;
 export const fixedKey = (talkId: string) => `fixed-focus:${talkId}`;
+export const failedKey = (talkId: string) => `focus-failed:${talkId}`;
 
 export function readFocus(talkId: string) {
   return readSetting<StoredFocus | null>(focusKey(talkId), focusSchema.nullable(), null);
+}
+
+export function readFocusFailed(talkId: string) {
+  return readSetting<boolean>(failedKey(talkId), z.boolean(), false);
 }
 
 function readFixedFocuses(talkId: string) {
@@ -31,38 +37,58 @@ function readFixedFocuses(talkId: string) {
 
 export async function markFocusFixedFor(talkId: string, focus: string) {
   const fixed = await readFixedFocuses(talkId);
+
   if (!fixed.some(item => item.toLowerCase() === focus.toLowerCase())) {
     await writeSetting(fixedKey(talkId), [...fixed, focus]);
   }
+
   await writeSetting(focusKey(talkId), null);
 }
 
 export async function refreshNextFocus(talkId: string, runs: Run[], userId: string) {
   const debriefed = runs.filter(run => run.debriefedAt !== null).slice(-5);
   const latest = debriefed.at(-1);
+
   if (!latest) return;
 
   await assertUsageAllowed(userId, 'coach-call', 1);
   const fixed = await readFixedFocuses(talkId);
-  const result = await runCoachTask(nextFocus, {
-    debriefs: debriefed.map(run => {
-      const totals = runTotals(run.sectionTimings);
-      return {
-        kind: run.kind,
-        excelled: run.excelled,
-        workOn: run.workOn,
-        challenge: run.challenge,
-        peeks: totals.peeks,
-        overrunSeconds: totals.overSeconds,
-      };
-    }),
-    fullRuns: endedRuns(runs).filter(run => run.kind === 'full-run').length,
-    totalRuns: endedRuns(runs).length,
-    fixedFocuses: fixed,
-  });
-  if (!result.cached) await recordUsage(userId, 'coach-call', 1);
+
+  const result = await runCoachTask(
+    nextFocus,
+    {
+      debriefs: debriefed.map(run => {
+        const totals = runTotals(run.sectionTimings);
+
+        return {
+          kind: run.kind,
+          excelled: run.excelled,
+          workOn: run.workOn,
+          challenge: run.challenge,
+          peeks: totals.peeks,
+          overrunSeconds: totals.overSeconds,
+        };
+      }),
+      fullRuns: endedRuns(runs).filter(run => run.kind === 'full-run').length,
+      totalRuns: endedRuns(runs).length,
+      fixedFocuses: fixed,
+    },
+    { talkId },
+  );
+
+  if (result.attempts > 0) await recordUsage(userId, 'coach-call', result.attempts);
 
   const output = nextFocus.schema.parse(result.output);
+
   if (fixed.some(item => item.toLowerCase() === output.focus.toLowerCase())) return;
   await writeSetting(focusKey(talkId), { ...output, runId: latest.id });
+}
+
+export async function refreshNextFocusOrRecordFailure(talkId: string, runs: Run[], userId: string) {
+  try {
+    await refreshNextFocus(talkId, runs, userId);
+    await writeSetting(failedKey(talkId), false);
+  } catch {
+    await writeSetting(failedKey(talkId), true);
+  }
 }

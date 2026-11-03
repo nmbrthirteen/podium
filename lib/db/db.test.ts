@@ -48,11 +48,13 @@ describe('database', () => {
     });
 
     const talk = await db.query.talks.findFirst({ where: eq(talks.id, 'talk-1') });
+
     const storedSections = await db
       .select()
       .from(sections)
       .where(eq(sections.talkId, 'talk-1'))
       .orderBy(asc(sections.position));
+
     const storedRun = await db.query.runs.findFirst({ where: eq(runs.talkId, 'talk-1') });
 
     expect(talk).toMatchObject({ title: 'Board update', stakes: 'high', lengthMinutes: 10 });

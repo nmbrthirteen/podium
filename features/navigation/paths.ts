@@ -3,6 +3,7 @@ const focusPath = /^\/talks\/[^/]+\/(practice\/[^/]+|present\/live)(\/|$)|^\/(si
 
 export function activeTalkId(pathname: string) {
   const id = pathname.match(talkPath)?.[1];
+
   return id && id !== 'new' ? id : null;
 }
 

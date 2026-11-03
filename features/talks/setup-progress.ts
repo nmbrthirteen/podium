@@ -13,5 +13,6 @@ export function readSeenSteps(talkId: string) {
 
 export async function markSeen(talkId: string, step: SeenStepId) {
   const seen = await readSeenSteps(talkId);
+
   if (!seen.includes(step)) await writeSetting(setupKey(talkId), [...seen, step]);
 }

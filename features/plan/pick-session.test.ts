@@ -38,6 +38,7 @@ describe('pickSession', () => {
         session({ id: 'yesterday', day: '2026-09-14', position: 3, kind: 'qa-drill', minutes: 15 }),
       ],
     });
+
     expect(pick).toEqual({ kind: 'qa-drill', sectionId: null, minutes: 15, sessionId: 'yesterday', reason: 'planned' });
   });
 
@@ -59,6 +60,7 @@ describe('pickSession', () => {
         },
       ],
     });
+
     expect(pick).toMatchObject({ kind: 'section-loop', sectionId: 'part-1', minutes: 12, reason: 'weak-section' });
   });
 
@@ -75,6 +77,7 @@ describe('pickSession', () => {
         },
       ],
     });
+
     expect(pick).toMatchObject({ kind: 'section-loop', sectionId: 'part-2', minutes: 18 });
   });
 
@@ -86,6 +89,7 @@ describe('pickSession', () => {
         { kind: 'full-run', sectionTimings: calmTimings },
       ],
     });
+
     expect(pick).toMatchObject({ kind: 'recorded-run', minutes: 20, reason: 'recorded' });
   });
 
@@ -95,6 +99,7 @@ describe('pickSession', () => {
       talkDay: '2026-09-17',
       runs: [{ kind: 'full-run', sectionTimings: calmTimings }],
     });
+
     expect(pick).toMatchObject({ kind: 'dress-rehearsal', minutes: 20, reason: 'dress' });
   });
 
@@ -107,6 +112,7 @@ describe('pickSession', () => {
         { kind: 'recorded-run', sectionTimings: calmTimings },
       ],
     });
+
     expect(pick).toMatchObject({ kind: 'full-run', minutes: 12, reason: 'default' });
   });
 });

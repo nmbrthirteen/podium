@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field, Textarea } from '@/components/ui/field';
 import { LoadingState } from '@/components/ui/loading-state';
@@ -33,8 +33,14 @@ export function DrillQuestion({ talkId, audience, item, position, total, onSaved
   const [error, setError] = useState<string | null>(null);
   const [saving, startSaving] = useTransition();
   const feedback = useCoachTask(qaFeedback);
-  const now = useNow(true);
+  const [expired, setExpired] = useState(false);
+  const now = useNow(!expired);
   const secondsLeft = Math.max(0, (endsAt - now) / 1000);
+  const wholeSecondsLeft = Math.ceil(secondsLeft);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) setExpired(true);
+  }, [secondsLeft]);
 
   const save = () =>
     startSaving(async () => {
@@ -67,9 +73,9 @@ export function DrillQuestion({ talkId, audience, item, position, total, onSaved
           size={112}
           stroke={6}
           tone={secondsLeft <= 10 ? 'danger' : 'accent'}
-          label={`${secondsLeft} seconds left to answer`}
+          label={`${wholeSecondsLeft} seconds left to answer`}
         >
-          <span className="font-mono text-2xl font-medium tabular-nums">{formatClock(secondsLeft)}</span>
+          <span className="font-mono text-2xl font-medium tabular-nums">{formatClock(wholeSecondsLeft)}</span>
         </ProgressRing>
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <p className="font-medium" aria-live="polite">
@@ -153,7 +159,9 @@ export function DrillQuestion({ talkId, audience, item, position, total, onSaved
 
 function StuckHint() {
   const [open, setOpen] = useState(false);
+
   if (open) return <p className="rounded-xl bg-inset px-4 py-3">{unknownScript}</p>;
+
   return (
     <Button variant="quiet" size="sm" className="-ml-3 self-start text-muted" onClick={() => setOpen(true)}>
       Stuck?

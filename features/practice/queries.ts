@@ -14,12 +14,15 @@ export async function loadRunView(params: Promise<{ 'talk-id': string; 'run-id':
   const [{ 'talk-id': talkId, 'run-id': runId }, userId] = await Promise.all([params, requireUserId()]);
   const bundle = await loadTalkBundle(talkId, userId);
   const run = bundle?.runs.find(item => item.id === runId);
+
   if (!bundle || !run) notFound();
 
   const explainersSeen = await readSetting(userSettingKey(userId, 'explainers-seen'), z.boolean(), false);
+
   const pool = bundle.questions
     .filter(question => question.source === 'predicted' || question.source === 'drill')
     .map(question => question.question);
+
   const listenerQuestions = [...new Set([...pool, ...fallbackListenerQuestions])].slice(0, 3);
 
   return {

@@ -11,6 +11,7 @@ export function KeywordsEditor({ cardTitle, keywords, onChange }: KeywordsEditor
   const add = () => {
     const keyword = draft.trim();
     setDraft('');
+
     if (!keyword || keywords.some(existing => existing.toLowerCase() === keyword.toLowerCase())) return;
     onChange([...keywords, keyword]);
   };

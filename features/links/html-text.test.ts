@@ -49,6 +49,7 @@ describe('extractPage', () => {
       </main>
       <aside>Related pages</aside>
     </body>`;
+
     expect(extractPage(html).text).toBe('The real text (see notes).');
   });
 

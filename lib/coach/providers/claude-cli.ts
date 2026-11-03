@@ -1,5 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
+import { type JsonValue, jsonSchema } from '@/lib/json';
 import { CoachError, type CoachProvider, parseStructured } from '../provider';
 import { toCliJsonSchema } from './json-schema';
 import { findExecutable, minimalEnv, runCli, withTempDir } from './run-cli';
@@ -7,11 +8,12 @@ import { findExecutable, minimalEnv, runCli, withTempDir } from './run-cli';
 const envelopeSchema = z.object({
   is_error: z.boolean().optional(),
   result: z.string().optional(),
-  structured_output: z.unknown().optional(),
+  structured_output: jsonSchema.optional(),
 });
 
-export function parseClaudeEnvelope(stdout: string): unknown {
+export function parseClaudeEnvelope(stdout: string): JsonValue {
   let parsed: unknown;
+
   try {
     parsed = JSON.parse(stdout);
   } catch {
@@ -19,11 +21,15 @@ export function parseClaudeEnvelope(stdout: string): unknown {
   }
 
   const envelope = envelopeSchema.safeParse(parsed);
+
   if (!envelope.success) throw new CoachError('invalid-output', 'Claude returned an unexpected envelope. Try again.');
+
   if (envelope.data.is_error) {
     throw new CoachError('failed', envelope.data.result || 'Claude returned an error. Try again.');
   }
+
   if (envelope.data.structured_output !== undefined) return envelope.data.structured_output;
+
   if (envelope.data.result) {
     try {
       return JSON.parse(envelope.data.result);
@@ -31,6 +37,7 @@ export function parseClaudeEnvelope(stdout: string): unknown {
       throw new CoachError('invalid-output', 'Claude returned no structured output. Try again.');
     }
   }
+
   throw new CoachError('invalid-output', 'Claude returned no structured output. Try again.');
 }
 
@@ -39,11 +46,13 @@ export const claudeCli: CoachProvider = {
 
   async detect() {
     const executable = await findExecutable('claude');
+
     return executable ? { available: true } : { available: false, reason: 'Claude Code is not on your PATH.' };
   },
 
   async generate(request) {
     const executable = await findExecutable('claude');
+
     if (!executable) throw new CoachError('unavailable', 'Claude Code is not installed. Install it, then try again.');
 
     return withTempDir(async cwd => {
@@ -72,6 +81,7 @@ export const claudeCli: CoachProvider = {
           request.system,
         ],
       });
+
       return parseStructured(request.schema, parseClaudeEnvelope(stdout));
     });
   },

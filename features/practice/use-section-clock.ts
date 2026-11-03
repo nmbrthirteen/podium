@@ -15,14 +15,16 @@ export function sectionTimings(
   budgetMultiplier = 1,
   peeks?: readonly number[],
 ): SectionTiming[] {
-  return cards
-    .map((item, position) => ({
+  return cards.flatMap((item, position) => {
+    const timing = {
       sectionId: item.id,
       seconds: Math.round(elapsed[position] ?? 0),
       budgetSeconds: Math.round(item.minutes * 60 * budgetMultiplier),
       peeks: peeks?.[position] ?? 0,
-    }))
-    .filter(timing => timing.seconds > 0 || timing.peeks > 0);
+    };
+
+    return timing.seconds > 0 || timing.peeks > 0 ? [timing] : [];
+  });
 }
 
 /**
@@ -41,6 +43,7 @@ export function useSectionClock(cardCount: number) {
     const time = Date.now();
     elapsed.current[index] = (elapsed.current[index] ?? 0) + (time - sectionStartedAt) / 1000;
     setSectionStartedAt(time);
+
     return time;
   };
 

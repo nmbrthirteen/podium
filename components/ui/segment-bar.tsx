@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 
 export type SegmentState = 'done' | 'current' | 'todo';
+
 export type Segment = { id: string; weight: number; state: SegmentState };
 
 const stateClass: Record<SegmentState, string> = {

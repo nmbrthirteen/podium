@@ -28,6 +28,7 @@ export function RecordingPreview({ recorder, onSkipRecording }: RecordingPreview
         : state === 'unsupported'
           ? 'This browser cannot record video. Run without recording, or open the app in Chrome.'
           : 'The camera did not start. Check that no other app is using it, then try again.';
+
     return (
       <div className="flex flex-col items-start gap-3 rounded-card bg-danger-soft p-4" role="alert">
         <p className="font-medium text-danger">{message}</p>

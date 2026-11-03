@@ -23,16 +23,21 @@ export function makePdf(pages: string[][]) {
 
   let output = '%PDF-1.4\n';
   const offsets: number[] = [];
+
   for (let id = 1; id < objects.length; id += 1) {
     offsets[id] = output.length;
     output += `${id} 0 obj\n${objects[id]}\nendobj\n`;
   }
+
   const xrefStart = output.length;
   output += `xref\n0 ${objects.length}\n0000000000 65535 f \n`;
+
   for (let id = 1; id < objects.length; id += 1) {
     output += `${String(offsets[id]).padStart(10, '0')} 00000 n \n`;
   }
+
   output += `trailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF\n`;
+
   return new TextEncoder().encode(output);
 }
 
@@ -49,12 +54,14 @@ export async function makePptx(slides: PptxSlide[]) {
     'ppt/presentation.xml',
     `<?xml version="1.0"?><p:presentation xmlns:p="p" xmlns:r="r"><p:sldIdLst>${sldIds}</p:sldIdLst></p:presentation>`,
   );
+
   const presentationRels = slides
     .map(
       (_, index) =>
         `<Relationship Id="rId${index + 10}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide${fileNumbers[index]}.xml"/>`,
     )
     .join('');
+
   zip.file(
     'ppt/_rels/presentation.xml.rels',
     `<?xml version="1.0"?><Relationships xmlns="r"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>${presentationRels}</Relationships>`,
@@ -66,6 +73,7 @@ export async function makePptx(slides: PptxSlide[]) {
       `ppt/slides/slide${fileNumber}.xml`,
       `<?xml version="1.0"?><p:sld><p:cSld><p:spTree><p:sp><p:nvSpPr><p:nvPr><p:ph type="title"/></p:nvPr></p:nvSpPr><p:txBody>${paragraph(slide.title)}</p:txBody></p:sp><p:sp><p:txBody>${slide.body.map(paragraph).join('')}</p:txBody></p:sp></p:spTree></p:cSld></p:sld>`,
     );
+
     if (slide.notes) {
       zip.file(
         `ppt/slides/_rels/slide${fileNumber}.xml.rels`,

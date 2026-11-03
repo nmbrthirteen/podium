@@ -15,10 +15,12 @@ export async function startSession(talkId: string, rawChoice?: z.input<typeof ch
   const choice = choiceSchema.parse(rawChoice);
   const userId = await requireUserId();
   const bundle = await loadTalkBundle(talkId, userId);
+
   if (!bundle) redirect('/');
 
   const picked = pickForBundle(bundle);
   const kind = choice?.kind ?? picked.kind;
+
   const plannedMatch = choice
     ? bundle.sessions.find(
         session =>
@@ -36,6 +38,7 @@ export async function startSession(talkId: string, rawChoice?: z.input<typeof ch
   if (kind === 'qa-drill') {
     redirect(`/talks/${talkId}/practice/qa${plannedMatch ? `?session=${plannedMatch.id}` : ''}`);
   }
+
   if (kind === 'talk-day-checklist') {
     redirect(`/talks/${talkId}/present`);
   }

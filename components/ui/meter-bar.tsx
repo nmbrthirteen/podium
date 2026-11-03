@@ -19,6 +19,7 @@ type MeterBarProps = VariantProps<typeof meterBarVariants> & {
 
 export function MeterBar({ value, tone, animated = false, className }: MeterBarProps) {
   const clamped = Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
+
   return (
     <span aria-hidden="true" className={cn(meterBarVariants({ tone }), className)}>
       <span

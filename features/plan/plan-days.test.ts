@@ -35,6 +35,7 @@ describe('initialDay', () => {
       '2026-09-15',
       '2026-09-18',
     );
+
     expect(initialDay(days, '2026-09-15')).toBe('2026-09-16');
   });
 

@@ -13,6 +13,7 @@ import { Sidebar } from './sidebar';
 export function AppFrame({ frame, children }: { frame: FrameData | null; children: ReactNode }) {
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
+
   if (!frame || isFocusPath(pathname)) return children;
 
   const talkId = activeTalkId(pathname);

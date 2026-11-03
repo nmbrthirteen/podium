@@ -9,6 +9,7 @@ export function useNow(running: boolean, intervalMs = 250) {
     if (!running) return;
     setNow(Date.now());
     const timer = setInterval(() => setNow(Date.now()), intervalMs);
+
     return () => clearInterval(timer);
   }, [running, intervalMs]);
 
@@ -17,5 +18,6 @@ export function useNow(running: boolean, intervalMs = 250) {
 
 export function useCountUp(startedAt: number | null, running = true) {
   const now = useNow(running && startedAt !== null);
+
   return startedAt === null ? 0 : Math.max(0, (now - startedAt) / 1000);
 }

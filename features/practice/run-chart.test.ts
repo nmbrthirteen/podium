@@ -16,6 +16,7 @@ describe('sectionBars', () => {
       ],
       sections,
     );
+
     expect(bars.map(bar => [bar.id, bar.over, bar.peeks])).toEqual([
       ['s1', false, 0],
       ['s2', true, 3],

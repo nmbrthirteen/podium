@@ -24,6 +24,7 @@ describe('describeNextStep', () => {
       sections,
       debriefed: false,
     });
+
     expect(step.task).toBe('Loop part 2, 9 minutes');
     expect(step.when).toBe('Today');
   });
@@ -36,6 +37,7 @@ describe('describeNextStep', () => {
       sections,
       debriefed: false,
     });
+
     expect(step).toEqual({ when: 'Today', task: 'Talk-day routine, 30 minutes', action: 'present' });
   });
 
@@ -47,6 +49,7 @@ describe('describeNextStep', () => {
       sessionId: null,
       reason: 'default' as const,
     };
+
     expect(
       describeNextStep({ startsAt: '2026-09-14T09:00', today: '2026-09-15', pick, sections, debriefed: false }),
     ).toEqual({ when: 'Yesterday', task: 'Debrief, 1 minute', action: 'debrief' });

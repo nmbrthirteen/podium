@@ -19,7 +19,8 @@ export function ChoiceTiles({ label, options, value, onChange, legendClassName }
       <div className="flex flex-wrap gap-2">
         {options.map(option => {
           const selected = option === value;
-          const Icon = choiceIcons[option] ?? SparkIcon;
+          const Icon = choiceIcons.get(option) ?? SparkIcon;
+
           return (
             <button
               key={option}

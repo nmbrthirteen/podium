@@ -93,14 +93,17 @@ describe('lintOutput', () => {
 
 function scriptedProvider(outputs: unknown[]) {
   const prompts: string[] = [];
+
   const provider: CoachProvider = {
     id: 'claude-cli',
     detect: async () => ({ available: true }),
     async generate<T>(request: CoachRequest<T>) {
       prompts.push(request.prompt);
+
       return request.schema.parse(outputs[prompts.length - 1]);
     },
   };
+
   return { provider, prompts };
 }
 
@@ -117,6 +120,7 @@ describe('generateChecked', () => {
     await expect(generateChecked(provider, textRequest)).resolves.toEqual({
       output: { text: 'Clean.' },
       flagged: false,
+      attempts: 1,
     });
     expect(prompts).toHaveLength(1);
   });
@@ -126,6 +130,7 @@ describe('generateChecked', () => {
     await expect(generateChecked(provider, textRequest)).resolves.toEqual({
       output: { text: 'Fast and simple.' },
       flagged: false,
+      attempts: 2,
     });
     expect(prompts).toHaveLength(2);
     expect(prompts[1]).toContain('output.text: Contains an em dash.');
@@ -136,6 +141,7 @@ describe('generateChecked', () => {
     await expect(generateChecked(provider, textRequest)).resolves.toEqual({
       output: { text: 'Still seamless.' },
       flagged: true,
+      attempts: 2,
     });
     expect(prompts).toHaveLength(2);
   });

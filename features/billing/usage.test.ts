@@ -20,10 +20,12 @@ afterAll(() => {
 describe('usage metering', () => {
   it('blocks the free plan past its limit and lifts it on pro', async () => {
     const userId = 'user-free';
+
     for (let call = 0; call < 40; call += 1) {
       await assertUsageAllowed(userId, 'coach-call', 1);
       await recordUsage(userId, 'coach-call', 1);
     }
+
     await expect(assertUsageAllowed(userId, 'coach-call', 1)).rejects.toBeInstanceOf(UsageLimitError);
 
     const free = await usageSummary(userId);
@@ -53,6 +55,7 @@ describe('usage metering', () => {
 
   it('skips limits in local mode', async () => {
     process.env.PODIUM_MODE = 'local';
+
     try {
       await expect(assertUsageAllowed('user-free', 'coach-call', 1)).resolves.toBeUndefined();
     } finally {

@@ -30,7 +30,7 @@ export function DebriefPrompts({ values, onChange, scope }: DebriefPromptsProps)
         label={scope === 'run' ? 'What to work on next run?' : 'What to work on next talk?'}
         options={withCurrent(workOnChoices(scope), values.workOn)}
         value={values.workOn}
-        onChange={next => onChange({ ...values, workOn: next, challenge: challengeFor[next] ?? '' })}
+        onChange={next => onChange({ ...values, workOn: next, challenge: challengeFor.get(next) ?? '' })}
       />
       {values.challenge && (
         <p className="flex items-center gap-2 font-medium">

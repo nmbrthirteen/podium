@@ -18,6 +18,7 @@ describe('runTotals', () => {
       { sectionId: 'a', seconds: 90, budgetSeconds: 60, peeks: 1 },
       { sectionId: 'b', seconds: 30, budgetSeconds: 60, peeks: 2 },
     ];
+
     expect(runTotals(timings)).toEqual({ seconds: 120, budgetSeconds: 120, peeks: 3, overSeconds: 30 });
   });
 

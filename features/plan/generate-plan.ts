@@ -30,12 +30,15 @@ export function sectionScore(timing: SectionTiming) {
 export function rankWeakestSections(sections: PlanSection[], latestTimings: SectionTiming[] = []) {
   const scores = new Map(latestTimings.map(timing => [timing.sectionId, sectionScore(timing)]));
   const hasRun = latestTimings.length > 0;
+
   return [...sections]
     .sort((a, b) => {
       if (hasRun) {
         const difference = (scores.get(b.id) ?? 0) - (scores.get(a.id) ?? 0);
+
         if (difference !== 0) return difference;
       }
+
       return b.minutes - a.minutes;
     })
     .map(section => section.id);
@@ -46,6 +49,7 @@ const draft = (kind: SessionKind, sectionId: string | null = null): Draft => ({ 
 function standardDays(prepDays: number, weakest: string[]): Draft[][] {
   const loops = weakest.slice(0, 2).map(id => draft('section-loop', id));
   const dayOne = [draft('full-run'), ...loops];
+
   const dayTwo = [
     draft('mental-walkthrough'),
     draft('recorded-run'),
@@ -53,15 +57,19 @@ function standardDays(prepDays: number, weakest: string[]): Draft[][] {
     draft('listener-run'),
     draft('qa-drill'),
   ];
+
   const dayThree = [draft('dress-rehearsal')];
 
   if (prepDays >= 3) {
     const middle = Array.from({ length: prepDays - 3 }, () => [draft('full-run')]);
+
     return [dayOne, ...middle, dayTwo, dayThree];
   }
 
   const merged = [...dayTwo, ...dayThree].filter(session => session.kind !== 'mental-walkthrough');
+
   if (prepDays === 2) return [dayOne, merged];
+
   return [[...dayOne, ...merged]];
 }
 
@@ -69,19 +77,23 @@ function deepDays(prepDays: number, weakest: string[]): Draft[][] {
   const days = standardDays(prepDays, weakest);
   days.forEach((sessions, index) => {
     const hasFullTalk = sessions.some(session => session.kind === 'full-run' || session.kind === 'dress-rehearsal');
+
     if (index % 2 === 0 && !hasFullTalk) sessions.unshift(draft('full-run'));
   });
 
   const dressDay = days.find(sessions => sessions.some(session => session.kind === 'dress-rehearsal'));
+
   if (dressDay) {
     const dressIndex = dressDay.findIndex(session => session.kind === 'dress-rehearsal');
     dressDay.splice(dressIndex, 0, draft('listener-run'), draft('qa-drill'));
   }
+
   return days;
 }
 
 function quickDays(weakest: string[]): Draft[][] {
   const loop = weakest.slice(0, 1).map(id => draft('section-loop', id));
+
   return [[draft('full-run'), ...loop, draft('open-close-drill'), draft('qa-drill')]];
 }
 

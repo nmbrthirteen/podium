@@ -24,6 +24,7 @@ export function StartSessionButton({
   className,
 }: StartSessionButtonProps) {
   const { start, pending } = useStartSession(talkId);
+
   return (
     <Button
       variant={variant}

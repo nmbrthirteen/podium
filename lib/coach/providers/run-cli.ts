@@ -11,19 +11,24 @@ const windows = process.platform === 'win32';
 
 export function minimalEnv(extra: Record<string, string> = {}) {
   const env: Record<string, string> = {};
+
   for (const key of envKeys(process.platform)) {
     const value = process.env[key];
+
     if (value) env[key] = value;
   }
+
   return { ...env, ...extra };
 }
 
 function searchDirs() {
   const home = os.homedir();
   const fromPath = pathEntries(process.env.PATH ?? '', path.delimiter);
+
   const common = windows
     ? [path.join(home, '.local', 'bin'), process.env.APPDATA ? path.join(process.env.APPDATA, 'npm') : '']
     : [path.join(home, '.local', 'bin'), '/opt/homebrew/bin', '/usr/local/bin'];
+
   return [...new Set([...fromPath, ...common].filter(Boolean))];
 }
 
@@ -36,17 +41,21 @@ function isExecutable(file: string) {
 
 export async function findExecutable(name: string) {
   const names = executableNames(name, process.platform, process.env.PATHEXT);
+
   for (const dir of searchDirs()) {
     for (const file of names) {
       const candidate = path.join(dir, file);
+
       if (await isExecutable(candidate)) return candidate;
     }
   }
+
   return null;
 }
 
 export async function withTempDir<T>(work: (dir: string) => Promise<T>) {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'podium-coach-'));
+
   try {
     return await work(dir);
   } finally {
@@ -75,12 +84,14 @@ const ignore = () => undefined;
 export async function runCli(run: CliRun) {
   const shim = windows && /\.(cmd|bat)$/i.test(run.executable) ? await readFile(run.executable, 'utf8') : null;
   const plan = spawnPlan(run.executable, run.args, process.platform, process.execPath, shim);
+
   if (!plan) {
     throw new CoachError(
       'unavailable',
       `Could not launch ${path.basename(run.executable)}. Reinstall it with npm or its installer, then try again.`,
     );
   }
+
   return runProcess(plan, run);
 }
 
@@ -93,6 +104,7 @@ function runProcess(
   return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
     if (signal?.aborted) {
       reject(new CoachError('aborted', 'The coach request was cancelled.'));
+
       return;
     }
 
@@ -103,6 +115,7 @@ function runProcess(
       windowsHide: true,
       stdio: ['pipe', 'pipe', 'pipe'],
     });
+
     let stdout = '';
     let stderr = '';
     let settled = false;
@@ -110,11 +123,15 @@ function runProcess(
 
     const stop = (reason: 'timeout' | 'aborted') => {
       stopReason = reason;
+
       if (!child.pid) return;
+
       if (windows) {
         spawn('taskkill', ['/pid', String(child.pid), '/T', '/F'], { windowsHide: true }).on('error', ignore);
+
         return;
       }
+
       try {
         process.kill(-child.pid, 'SIGKILL');
       } catch {
@@ -131,6 +148,7 @@ function runProcess(
       settled = true;
       clearTimeout(timer);
       signal?.removeEventListener('abort', onAbort);
+
       if (error) reject(error);
       else resolve({ stdout, stderr });
     };

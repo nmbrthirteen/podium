@@ -17,7 +17,7 @@ export function toBriefContext(
     bigIdea: values.bigIdea,
     openingLine: values.openingLine,
     closingLine: values.closingLine,
-    points: points.filter(point => point.text.trim()).map(point => ({ text: point.text, example: point.example })),
+    points: points.flatMap(point => (point.text.trim() ? [{ text: point.text, example: point.example }] : [])),
   };
 }
 
@@ -27,6 +27,7 @@ export function focusTarget(target: string) {
   requestAnimationFrame(() =>
     requestAnimationFrame(() => {
       const element = document.getElementById(target);
+
       if (!element) return;
       element.scrollIntoView({ block: 'center' });
       element.focus({ preventScroll: true });

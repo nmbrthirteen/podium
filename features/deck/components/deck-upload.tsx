@@ -28,12 +28,16 @@ export function DeckUpload({ talkId, compact = false, onUploaded }: DeckUploadPr
     setError(null);
     const kind = deckKindOf(file.name);
     const isPdf = kind === 'pdf';
+
     if (!kind) {
       setError('Upload a PPTX or PDF. Export Keynote or Google Slides decks to one of those first.');
+
       return;
     }
+
     if (file.size > maxDeckBytes) {
       setError('This deck is over 100 MB. Export a smaller copy, then upload it.');
+
       return;
     }
 
@@ -43,10 +47,12 @@ export function DeckUpload({ talkId, compact = false, onUploaded }: DeckUploadPr
 
     if (isPdf) {
       setPhase({ name: 'reading', detail: 'Rendering slide thumbnails' });
+
       try {
         const thumbnails = await renderPdfThumbnails(file, (done, total) =>
           setPhase({ name: 'reading', detail: `Rendering thumbnail ${done} of ${total}` }),
         );
+
         for (const [number, blob] of thumbnails) form.set(`thumb-${number}`, blob, `${number}.png`);
       } catch {
         setPhase({ name: 'reading', detail: 'Reading slides without thumbnails' });
@@ -56,12 +62,14 @@ export function DeckUpload({ talkId, compact = false, onUploaded }: DeckUploadPr
     setPhase({ name: 'reading', detail: 'Reading slide text and notes' });
     const response = await fetch('/api/decks', { method: 'POST', body: form }).catch(() => null);
     const body: unknown = await response?.json().catch(() => null);
+
     if (!response?.ok) {
       const message = z.object({ error: z.string() }).safeParse(body);
       setError(
         message.success ? message.data.error : 'The upload failed. Check that the app is running, then try again.',
       );
       setPhase({ name: 'idle' });
+
       return;
     }
 
@@ -75,21 +83,28 @@ export function DeckUpload({ talkId, compact = false, onUploaded }: DeckUploadPr
 
   useEffect(() => {
     const zone = dropRef.current;
+
     if (!zone) return;
+
     const over = (event: DragEvent) => {
       event.preventDefault();
       setDragging(true);
     };
+
     const leave = () => setDragging(false);
+
     const drop = (event: DragEvent) => {
       event.preventDefault();
       setDragging(false);
       const file = event.dataTransfer?.files[0];
+
       if (file) void uploadRef.current(file);
     };
+
     zone.addEventListener('dragover', over);
     zone.addEventListener('dragleave', leave);
     zone.addEventListener('drop', drop);
+
     return () => {
       zone.removeEventListener('dragover', over);
       zone.removeEventListener('dragleave', leave);
@@ -136,6 +151,7 @@ export function DeckUpload({ talkId, compact = false, onUploaded }: DeckUploadPr
             onChange={event => {
               const file = event.target.files?.[0];
               event.target.value = '';
+
               if (file) void upload(file);
             }}
           />

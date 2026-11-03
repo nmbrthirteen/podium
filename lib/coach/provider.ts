@@ -31,10 +31,12 @@ export class CoachError extends Error {
 
 export const coachTimeoutMs = 90_000;
 
-export function parseStructured<T>(schema: z.ZodType<T>, value: unknown): T {
+export function parseStructured<T, Raw>(schema: z.ZodType<T>, value: Raw): T {
   const parsed = schema.safeParse(value);
+
   if (!parsed.success) {
     throw new CoachError('invalid-output', 'The coach returned fields that do not match the task. Try again.');
   }
+
   return parsed.data;
 }

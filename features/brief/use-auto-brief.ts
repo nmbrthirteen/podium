@@ -16,11 +16,13 @@ export function useAutoBrief({ talk, brief, points, slides }: TalkBundle) {
   const coach = useCoachTask(briefPrefill);
   const [drafted, setDrafted] = useState<DraftedBrief | null>(null);
   const attempted = useRef(false);
+
   const missing =
     drafted === null && [brief.goal, brief.bigIdea, brief.openingLine, brief.closingLine].some(value => !value.trim());
 
   const draft = async () => {
     const now = new Date();
+
     const output = await coach.run({
       text: talk.title,
       deckText: deckTextForCoach(slides),
@@ -34,8 +36,10 @@ export function useAutoBrief({ talk, brief, points, slides }: TalkBundle) {
         closingLine: brief.closingLine,
       },
     });
+
     if (!output) return;
     const saved = await applyBriefDraft(talk.id, { ...output, points: points.length > 0 ? [] : output.points });
+
     if (saved.brief) setDrafted({ version: 1, brief: saved.brief, points: saved.points });
   };
 
@@ -46,6 +50,7 @@ export function useAutoBrief({ talk, brief, points, slides }: TalkBundle) {
     if (!missing || attempted.current) return;
     attempted.current = true;
     void draftRef.current();
+
     return () => {
       attempted.current = false;
     };

@@ -69,6 +69,7 @@ export function SlideEditor({
       },
       { fresh: true },
     );
+
     if (!output) return;
     setPrevious(draft);
     save(output);

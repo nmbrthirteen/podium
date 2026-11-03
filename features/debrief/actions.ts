@@ -21,6 +21,7 @@ export async function saveTalkDebrief(talkId: string, raw: TalkDebriefInput) {
   const input = debriefSchema.parse(raw);
   const { db } = await requireTalkAccess(talkId);
   const now = new Date().toISOString();
+
   const values = {
     excelled: input.excelled,
     workOn: input.workOn,
@@ -34,6 +35,7 @@ export async function saveTalkDebrief(talkId: string, raw: TalkDebriefInput) {
     .onConflictDoUpdate({ target: talkDebriefs.talkId, set: values });
 
   await db.delete(questions).where(and(eq(questions.talkId, talkId), eq(questions.source, 'received')));
+
   if (input.questions.length > 0) {
     await db.insert(questions).values(
       input.questions.map(item => ({

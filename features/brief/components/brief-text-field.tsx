@@ -30,6 +30,7 @@ export function BriefLine({ draft, ...props }: BriefLineProps) {
       />
     );
   }
+
   return <DraftableLine draft={draft} {...props} />;
 }
 

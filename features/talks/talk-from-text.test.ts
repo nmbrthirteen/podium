@@ -56,6 +56,7 @@ describe('buildTalkInput', () => {
       text: 'Weekly sync',
       coach: { ...coach, date: '2026-09-01', time: '25:00', lengthMinutes: 0 },
     });
+
     expect(input.startsAt).toBe('2026-09-16T10:00');
     expect(input.lengthMinutes).toBe(10);
   });

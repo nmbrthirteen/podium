@@ -13,7 +13,9 @@ const sections = [
 
 function byDay(plan: PlannedSession[]) {
   const days = new Map<string, SessionKind[]>();
+
   for (const session of plan) days.set(session.day, [...(days.get(session.day) ?? []), session.kind]);
+
   return Object.fromEntries(days);
 }
 
@@ -101,6 +103,7 @@ describe('generatePlan', () => {
       .slice(0, 9)
       .forEach((day, index) => {
         const kinds = days[day] ?? [];
+
         if (index % 2 === 0) expect(kinds.some(kind => kind === 'full-run' || kind === 'dress-rehearsal')).toBe(true);
       });
     const ladder = plan.map(session => session.kind);
@@ -145,6 +148,7 @@ describe('rankWeakestSections', () => {
       { sectionId: 'part-1', seconds: 240, budgetSeconds: 150, peeks: 0 },
       { sectionId: 'part-2', seconds: 240, budgetSeconds: 240, peeks: 2 },
     ]);
+
     expect(ranked.slice(0, 3)).toEqual(['part-1', 'part-2', 'open']);
   });
 });

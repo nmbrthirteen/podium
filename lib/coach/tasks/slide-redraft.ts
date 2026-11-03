@@ -5,6 +5,7 @@ import { briefContextSchema, describeBrief } from './brief-context';
 import { slideCoachRole, slideContentSchema, slideFieldGuides } from './slides-draft';
 
 export const slideTweaks = ['more-visual', 'fewer-words', 'stronger-title', 'new-idea'] as const;
+
 export type SlideTweak = (typeof slideTweaks)[number];
 
 const tweakGuides: Record<SlideTweak, string> = {

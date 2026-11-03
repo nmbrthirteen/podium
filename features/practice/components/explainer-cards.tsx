@@ -34,6 +34,7 @@ export function ExplainerCards({ onDone }: { onDone: () => void }) {
 
   if (!card) return null;
   const last = index === explainers.length - 1;
+
   const advance = () => {
     if (last) onDone();
     else setIndex(index + 1);

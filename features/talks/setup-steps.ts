@@ -1,7 +1,9 @@
 export const seenStepIds = ['brief', 'cards'] as const;
+
 export type SeenStepId = (typeof seenStepIds)[number];
 
 export type SetupStepId = 'slides' | SeenStepId | 'run';
+
 export type SetupStep = { id: SetupStepId; done: boolean };
 
 type SetupInput = { hasDeck: boolean; seen: readonly string[]; runs: number };

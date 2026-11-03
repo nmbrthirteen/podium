@@ -7,10 +7,9 @@ type AccountOverviewProps = {
   planLabel: string;
   resetsOn: string;
   usage: { kind: UsageKind; used: number; limit: number }[];
-  upgradesOpen: boolean;
 };
 
-export function AccountOverview({ email, planLabel, resetsOn, usage, upgradesOpen }: AccountOverviewProps) {
+export function AccountOverview({ email, planLabel, resetsOn, usage }: AccountOverviewProps) {
   return (
     <div className="flex flex-col gap-10">
       <section aria-labelledby="profile-heading" className="flex flex-col items-start gap-3">
@@ -32,6 +31,7 @@ export function AccountOverview({ email, planLabel, resetsOn, usage, upgradesOpe
           {usage.map(item => {
             const label = usageLabels[item.kind];
             const share = item.limit > 0 ? Math.min(1, item.used / item.limit) : 0;
+
             return (
               <li key={item.kind} className="flex flex-col gap-2">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -46,9 +46,7 @@ export function AccountOverview({ email, planLabel, resetsOn, usage, upgradesOpe
             );
           })}
         </ul>
-        <p className="text-muted">
-          {upgradesOpen ? 'Upgrade to Pro for more coach checks and storage.' : 'Paid plans open soon.'}
-        </p>
+        <p className="text-muted">Paid plans open soon.</p>
       </section>
     </div>
   );
