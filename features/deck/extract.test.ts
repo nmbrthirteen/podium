@@ -34,10 +34,12 @@ describe('extractPdf', () => {
   it('reads text from 30 pages', async () => {
     const wrap = (line: string) => {
       const words = line.replace('&amp;', '&').split(' ');
+
       return Array.from({ length: Math.ceil(words.length / 8) }, (_, row) =>
         words.slice(row * 8, row * 8 + 8).join(' '),
       );
     };
+
     const pages = sampleSlides(30).map(slide => [slide.title, ...slide.body.flatMap(wrap)]);
     const slides = await extractPdf(makePdf(pages));
 

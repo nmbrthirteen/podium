@@ -2,7 +2,7 @@
 
 import { animate, motion, useMotionValue, useReducedMotion } from 'motion/react';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/ui/icons';
 import { LoadingState } from '@/components/ui/loading-state';
@@ -58,7 +58,16 @@ export function LiveMode({ talkId, talkTitle, runId, cards, lengthMinutes, recov
 
   actions.current = { next: () => clock.goTo(index + 1), back: () => clock.goTo(index - 1) };
 
+  useEffect(
+    () => () => {
+      if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+    },
+    [],
+  );
+
   const begin = () => {
+    // Best effort: browsers refuse fullscreen without a recent tap, and live mode works without it.
+    void document.documentElement.requestFullscreen?.().catch(() => {});
     const time = Date.now();
     setLiveStartedAt(time);
     clock.setSectionStartedAt(time);
@@ -67,11 +76,15 @@ export function LiveMode({ talkId, talkTitle, runId, cards, lengthMinutes, recov
 
   const end = async () => {
     const endedAt = clock.bank();
+
     if (!runId) {
       router.push(`/talks/${talkId}/debrief`);
+
       return;
     }
+
     setPhase('saving');
+
     try {
       await finishRun(runId, {
         startedAt: new Date(liveStartedAt).toISOString(),

@@ -15,6 +15,7 @@ export const aiSdk: CoachProvider = {
 
   async generate(request) {
     const env = readEnv();
+
     if (!env.OPENROUTER_API_KEY) {
       throw new CoachError('unavailable', 'The hosted coach has no API key. Set OPENROUTER_API_KEY, then try again.');
     }
@@ -32,10 +33,13 @@ export const aiSdk: CoachProvider = {
         abortSignal: signal,
         maxRetries: 1,
       });
+
       return parseStructured(request.schema, result.output);
     } catch (error) {
       if (error instanceof CoachError) throw error;
+
       if (request.signal?.aborted) throw new CoachError('aborted', 'The coach request was cancelled.');
+
       if (timeout.aborted) throw new CoachError('timeout', 'The coach took longer than 90 seconds. Try again.');
       throw new CoachError('failed', 'The hosted coach did not answer. Try again in a minute.');
     }

@@ -14,6 +14,7 @@ describe('isPrivateAddress', () => {
     ]) {
       expect(isPrivateAddress(address)).toBe(true);
     }
+
     expect(isPrivateAddress('fd12::1')).toBe(true);
     expect(isPrivateAddress('fe80::1')).toBe(true);
     expect(isPrivateAddress('::ffff:127.0.0.1')).toBe(true);

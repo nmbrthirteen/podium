@@ -29,7 +29,9 @@ type AddTalkFormProps = {
 function appendSpoken(current: string, spoken: string) {
   if (!spoken) return current;
   const trimmed = current.trim();
+
   if (!trimmed) return capitalize(spoken);
+
   return `${trimmed.replace(/[.!?]?$/, '.')} ${capitalize(spoken)}`;
 }
 
@@ -76,6 +78,9 @@ export function AddTalkForm({
             disabled={busy}
             onPress={speech.listening ? speech.stop : speech.start}
           />
+          <p className="max-w-sm text-sm text-muted">
+            Dictation sends your audio to your browser's speech service. Chrome uses Google.
+          </p>
           {(text || speech.interim) && (
             <p aria-live="polite" className="max-w-xl text-lg text-pretty">
               {text}

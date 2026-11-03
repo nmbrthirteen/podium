@@ -48,11 +48,15 @@ export function EditableLine({
 
   const finish = () => {
     setEditing(false);
+
     if (skipSave.current) {
       skipSave.current = false;
+
       return;
     }
+
     const next = draft.trim();
+
     if (next !== value.trim()) onSave(next);
   };
 

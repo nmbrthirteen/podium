@@ -6,12 +6,13 @@ import { SegmentedControl } from '@/components/ui/segmented-control';
 import type { ProviderPreference, ProviderStatus } from '@/lib/coach/registry';
 import { resetExplainers, saveProviderPreference } from '../actions';
 
-const providerNames: Record<string, string> = {
+const providerNames = {
   'claude-cli': 'Claude Code',
   'codex-cli': 'Codex',
   'ai-sdk': 'OpenRouter API',
 };
-const installLinks: Record<string, string> = {
+
+const installLinks = {
   'claude-cli': 'https://docs.claude.com/en/docs/claude-code/setup',
   'codex-cli': 'https://github.com/openai/codex',
   'ai-sdk': 'https://openrouter.ai/keys',
@@ -40,8 +41,9 @@ export function CoachSettings({ statuses, preference: initialPreference }: Coach
             Coach
           </h2>
           <p className="max-w-prose text-muted">
-            The coach runs through Claude Code or Codex on this computer, with your own subscription. Nothing else
-            leaves the machine.
+            The coach runs through Claude Code or Codex on this computer, with your own subscription. Your talk text,
+            slides, notes, link pages, and answers go to the provider you pick: Anthropic through Claude Code, OpenAI
+            through Codex, or OpenRouter. Recordings stay on this computer.
           </p>
         </div>
         <ul className="divide-y divide-line border-y border-line">

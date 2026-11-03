@@ -29,11 +29,14 @@ export function CommandPalette({ open, onOpenChange, frame, talkId }: CommandPal
         onOpenChange(!open);
       }
     };
+
     window.addEventListener('keydown', onKeyDown);
+
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [open, onOpenChange]);
 
   const current = frame.talks.find(talk => talk.id === talkId);
+
   const commands: Command[] = [
     ...(current
       ? talkPages.map(page => ({
@@ -63,9 +66,11 @@ export function CommandPalette({ open, onOpenChange, frame, talkId }: CommandPal
   ];
 
   const needle = query.trim().toLowerCase();
+
   const results = needle
     ? commands.filter(command => `${command.label} ${command.group}`.toLowerCase().includes(needle))
     : commands;
+
   const activeIndex = Math.min(active, Math.max(results.length - 1, 0));
 
   const close = () => {
@@ -118,6 +123,7 @@ export function CommandPalette({ open, onOpenChange, frame, talkId }: CommandPal
               {results.map((command, index) => {
                 const Icon = command.icon;
                 const firstInGroup = index === 0 || results[index - 1]?.group !== command.group;
+
                 return (
                   <li key={command.id} className="flex flex-col">
                     {firstInGroup && (

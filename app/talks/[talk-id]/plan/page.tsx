@@ -12,11 +12,13 @@ export const metadata: Metadata = { title: 'Plan' };
 
 export default async function PlanPage({ params }: { params: Promise<{ 'talk-id': string }> }) {
   const { bundle, today, next } = await loadTalkPage(params);
+
   const steps = setupStepsFor({
     hasDeck: bundle.deck !== null,
     seen: await readSeenSteps(bundle.talk.id),
     runs: endedRuns(bundle.runs).length,
   });
+
   const showGuide = bundle.talk.completedAt === null && steps.some(step => !step.done);
 
   return (

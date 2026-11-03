@@ -13,7 +13,9 @@ export type SectionBar = {
 export function sectionBars(timings: SectionTiming[], sections: { id: string; title: string }[]): SectionBar[] {
   return sections.flatMap(section => {
     const timing = timings.find(item => item.sectionId === section.id);
+
     if (!timing) return [];
+
     return [
       {
         id: section.id,

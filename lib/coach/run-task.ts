@@ -5,14 +5,21 @@ import { z } from 'zod';
 import { database } from '@/lib/db/client';
 import { coachCache } from '@/lib/db/schema';
 import { isHosted } from '@/lib/env';
+import type { JsonValue } from '@/lib/json';
 import { readSetting } from '@/lib/settings';
 import { newId } from '@/lib/utils';
 import { generateChecked } from './generate-checked';
 import { CoachError, type CoachProviderId } from './provider';
-import { type ProviderPreference, resolveProvider } from './registry';
+import { coachDisabled, type ProviderPreference, resolveProvider } from './registry';
 import type { RunnableCoachTask } from './task';
 
-export type CoachResult = { output: unknown; flagged: boolean; provider: CoachProviderId | 'cache'; cached: boolean };
+export type CoachResult = {
+  output: unknown;
+  flagged: boolean;
+  provider: CoachProviderId | 'cache';
+  cached: boolean;
+  attempts: number;
+};
 
 export const providerPreferenceSchema = z.enum(['auto', 'claude-cli', 'codex-cli', 'ai-sdk']);
 
@@ -32,10 +39,11 @@ function hashPrompt(task: RunnableCoachTask, prompt: string) {
 
 export async function runCoachTask(
   task: RunnableCoachTask,
-  rawInput: unknown,
-  options: { signal?: AbortSignal; fresh?: boolean } = {},
+  rawInput: JsonValue,
+  options: { signal?: AbortSignal; fresh?: boolean; talkId?: string } = {},
 ): Promise<CoachResult> {
   let prompt: string;
+
   try {
     prompt = task.promptFor(rawInput);
   } catch {
@@ -44,16 +52,21 @@ export async function runCoachTask(
 
   const db = await database();
   const inputHash = hashPrompt(task, prompt);
+  const talkId = options.talkId ?? '';
 
   if (!options.fresh) {
     const cached = await db.query.coachCache.findFirst({
-      where: and(eq(coachCache.task, task.id), eq(coachCache.inputHash, inputHash)),
+      where: and(eq(coachCache.task, task.id), eq(coachCache.inputHash, inputHash), eq(coachCache.talkId, talkId)),
     });
+
     const parsed = cached ? task.schema.safeParse(cached.output) : null;
-    if (parsed?.success) return { output: parsed.data, flagged: false, provider: 'cache', cached: true };
+
+    if (parsed?.success) return { output: parsed.data, flagged: false, provider: 'cache', cached: true, attempts: 0 };
   }
 
+  if (coachDisabled()) throw new CoachError('unavailable', 'The coach is turned off on this server.');
   const provider = await resolveProvider(isHosted() ? 'ai-sdk' : await providerPreference());
+
   if (!provider) {
     throw new CoachError(
       'unavailable',
@@ -63,7 +76,7 @@ export async function runCoachTask(
     );
   }
 
-  const { output, flagged } = await generateChecked(provider, {
+  const { output, flagged, attempts } = await generateChecked(provider, {
     task: task.id,
     system: task.system,
     prompt,
@@ -78,15 +91,16 @@ export async function runCoachTask(
         id: newId(),
         task: task.id,
         inputHash,
+        talkId,
         provider: provider.id,
         output,
         createdAt: new Date().toISOString(),
       })
       .onConflictDoUpdate({
-        target: [coachCache.task, coachCache.inputHash],
+        target: [coachCache.task, coachCache.inputHash, coachCache.talkId],
         set: { output, provider: provider.id, createdAt: new Date().toISOString() },
       });
   }
 
-  return { output, flagged, provider: provider.id, cached: false };
+  return { output, flagged, provider: provider.id, cached: false, attempts };
 }

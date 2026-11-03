@@ -9,8 +9,10 @@ export function useWakeLock(active: boolean) {
 
   useEffect(() => {
     if (!active) return;
+
     if (!('wakeLock' in navigator)) {
       setStatus('unsupported');
+
       return;
     }
 
@@ -20,10 +22,13 @@ export function useWakeLock(active: boolean) {
     const request = async () => {
       try {
         const next = await navigator.wakeLock.request('screen');
+
         if (cancelled) {
           await next.release();
+
           return;
         }
+
         sentinel = next;
         setStatus('active');
       } catch {
@@ -37,6 +42,7 @@ export function useWakeLock(active: boolean) {
 
     void request();
     document.addEventListener('visibilitychange', onVisibilityChange);
+
     return () => {
       cancelled = true;
       document.removeEventListener('visibilitychange', onVisibilityChange);

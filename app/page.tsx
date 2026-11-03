@@ -18,14 +18,17 @@ import { isHosted } from '@/lib/env';
 export default async function HomePage() {
   await connection();
   const user = await currentUser();
+
   if (!user) return <LandingPage />;
 
   const hosted = isHosted();
+
   const [talks, statuses, across] = await Promise.all([
     listTalkSummaries(user.id),
     hosted ? Promise.resolve([]) : providerStatuses(),
     loadAcrossTalks(user.id),
   ]);
+
   const coachMissing = !hosted && statuses.every(status => !status.available);
   const active = talks.filter(talk => !talk.done);
   const finished = talks.filter(talk => talk.done);

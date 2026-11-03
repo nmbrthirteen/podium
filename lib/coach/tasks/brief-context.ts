@@ -21,6 +21,7 @@ export function describeBrief(brief: BriefContext) {
   const points = brief.points.length
     ? brief.points.map((point, index) => `  ${index + 1}. ${orEmpty(point.text)} Example: ${orEmpty(point.example)}`)
     : ['  (none yet)'];
+
   return [
     `Title: ${orEmpty(brief.title)}`,
     `Talk type: ${brief.type}`,

@@ -33,6 +33,7 @@ export function TalkTimeline({
       {sections.map((section, index) => {
         const current = index === selectedIndex;
         const done = progress !== undefined && index < selectedIndex;
+
         const blockClass = cn(
           'relative flex min-w-0 flex-col items-start justify-center overflow-hidden rounded-control px-2 text-left',
           progress
@@ -45,7 +46,9 @@ export function TalkTimeline({
               ? 'bg-accent text-accent-ink'
               : 'bg-inset text-ink hover:bg-line',
         );
+
         const style = { flexGrow: Math.max(section.minutes, 0.1), flexBasis: 0 };
+
         const content = (
           <>
             {progress && current && (
@@ -123,6 +126,7 @@ function BoundaryHandle({ boundary, minutes, left, right, trackRef, onRetime, on
   const finish = () => {
     const current = drag.current;
     drag.current = null;
+
     if (current && current.latest !== current.start) onRetimeEnd(current.latest, boundary);
   };
 
@@ -146,8 +150,10 @@ function BoundaryHandle({ boundary, minutes, left, right, trackRef, onRetime, on
         onPointerMove={event => {
           const current = drag.current;
           const width = trackRef.current?.getBoundingClientRect().width;
+
           if (!current || !width) return;
           const next = moveBoundary(current.start, boundary, ((event.clientX - current.x) / width) * total);
+
           if (next[boundary] === current.latest[boundary]) return;
           current.latest = next;
           onRetime(next);
@@ -161,9 +167,11 @@ function BoundaryHandle({ boundary, minutes, left, right, trackRef, onRetime, on
               : event.key === 'ArrowRight' || event.key === 'ArrowUp'
                 ? minuteStep
                 : 0;
+
           if (!delta) return;
           event.preventDefault();
           const next = moveBoundary(minutes, boundary, delta);
+
           if (next === minutes) return;
           onRetime(next);
           onRetimeEnd(next, boundary);

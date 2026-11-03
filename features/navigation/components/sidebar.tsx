@@ -100,6 +100,7 @@ function TalkGroup({ label, talks, talkId, pathname, onNavigate }: TalkGroupProp
       <ul className="flex flex-col gap-0.5">
         {talks.map(talk => {
           const open = talk.id === talkId;
+
           return (
             <li key={talk.id} className="flex flex-col">
               <Link
@@ -123,6 +124,7 @@ function TalkGroup({ label, talks, talkId, pathname, onNavigate }: TalkGroupProp
                   {talkPages.map(page => {
                     const href = `/talks/${talk.id}/${page.segment}`;
                     const Icon = page.icon;
+
                     return (
                       <li key={page.segment}>
                         <NavLink

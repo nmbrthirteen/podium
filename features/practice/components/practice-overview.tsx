@@ -15,6 +15,7 @@ import { cn, formatClock, pluralize } from '@/lib/utils';
 import type { StoredFocus } from '../next-focus';
 import { sectionBars } from '../run-chart';
 import { endedRuns, runTotals } from '../runs';
+import { FocusFailed } from './focus-failed';
 import { FocusHint } from './focus-hint';
 import { PracticeModes } from './practice-modes';
 import { RunStrip } from './run-chart';
@@ -25,11 +26,12 @@ type PracticeOverviewProps = {
   bundle: TalkBundle;
   pick: SessionPick;
   focus: StoredFocus | null;
+  focusFailed: boolean;
   today: string;
   now: Date;
 };
 
-export function PracticeOverview({ bundle, pick, focus, today, now }: PracticeOverviewProps) {
+export function PracticeOverview({ bundle, pick, focus, focusFailed, today, now }: PracticeOverviewProps) {
   const talkId = bundle.talk.id;
   const section = bundle.sections.find(item => item.id === pick.sectionId);
   const NextIcon = sessionKindIcons[pick.kind];
@@ -70,6 +72,7 @@ export function PracticeOverview({ bundle, pick, focus, today, now }: PracticeOv
       </section>
 
       {focus && <FocusHint talkId={talkId} focus={focus.focus} reason={focus.reason} kind={focus.kind} />}
+      {focusFailed && <FocusFailed talkId={talkId} />}
 
       <section aria-label="Readiness" className="grid gap-3 sm:grid-cols-3">
         <StatTile
@@ -150,6 +153,7 @@ export function PracticeOverview({ bundle, pick, focus, today, now }: PracticeOv
               const { peeks, seconds: spoken } = runTotals(run.sectionTimings);
               const runSection = bundle.sections.find(item => item.id === run.sectionId);
               const timed = run.sectionTimings.length > 0;
+
               return (
                 <li key={run.id}>
                   <Link

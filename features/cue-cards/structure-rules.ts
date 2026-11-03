@@ -11,8 +11,10 @@ function formatNumber(value: number) {
 
 export function structureRules(input: StructureRuleInput): RuleIssue[] {
   const issues: RuleIssue[] = [];
+
   if (input.sections.length > 0) {
     const total = input.sections.reduce((sum, section) => sum + section.minutes, 0);
+
     if (Math.abs(total - input.lengthMinutes) > 0.01) {
       issues.push({
         id: 'section-minutes',
@@ -31,5 +33,6 @@ export function structureRules(input: StructureRuleInput): RuleIssue[] {
       });
     }
   }
+
   return issues;
 }

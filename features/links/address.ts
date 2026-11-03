@@ -5,6 +5,7 @@ export function isPrivateAddress(address: string): boolean {
 
   if (version === 4) {
     const [a = 0, b = 0] = address.split('.').map(Number);
+
     return (
       a === 0 ||
       a === 10 ||
@@ -19,7 +20,9 @@ export function isPrivateAddress(address: string): boolean {
 
   if (version === 6) {
     const lower = address.toLowerCase();
+
     if (lower.startsWith('::ffff:')) return isPrivateAddress(lower.slice(7));
+
     return lower === '::' || lower === '::1' || /^f[cd]/.test(lower) || /^fe[89ab]/.test(lower);
   }
 

@@ -32,9 +32,12 @@ export function useMediaRecorder() {
   const request = useCallback(async () => {
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
       setState('unsupported');
+
       return;
     }
+
     setState('requesting');
+
     try {
       const media = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 } }, audio: true });
       streamRef.current = media;
@@ -48,6 +51,7 @@ export function useMediaRecorder() {
 
   const start = useCallback(() => {
     const media = streamRef.current;
+
     if (!media) return;
     const mimeType = preferredTypes.find(type => MediaRecorder.isTypeSupported(type));
     const recorder = new MediaRecorder(media, mimeType ? { mimeType } : undefined);
@@ -55,6 +59,7 @@ export function useMediaRecorder() {
     recorder.ondataavailable = event => {
       if (event.data.size > 0) chunksRef.current.push(event.data);
     };
+
     recorder.start(1000);
     recorderRef.current = recorder;
     setState('recording');
@@ -64,17 +69,21 @@ export function useMediaRecorder() {
     () =>
       new Promise<Blob | null>(resolve => {
         const recorder = recorderRef.current;
+
         if (!recorder || recorder.state === 'inactive') {
           release();
           resolve(null);
+
           return;
         }
+
         recorder.onstop = () => {
           const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'video/webm' });
           release();
           setState('stopped');
           resolve(blob.size > 0 ? blob : null);
         };
+
         recorder.stop();
       }),
     [release],

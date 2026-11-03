@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 const cells = Array.from({ length: 9 }, (_, index) => {
   const row = Math.floor(index / 3);
   const column = index % 3;
+
   return { id: `cell-${index}`, delay: (column + Math.abs(row - 1)) * 90 };
 });
 

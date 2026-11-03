@@ -12,18 +12,22 @@ export function GlideMenu({ children, className }: { children: ReactNode; classN
 
   useEffect(() => {
     const container = ref.current;
+
     if (!container) return;
 
     const moveTo = (event: Event) => {
       if (!(event.target instanceof Element)) return;
       const row = event.target.closest('[data-menu-row]');
+
       if (!(row instanceof HTMLElement) || !container.contains(row)) return;
       const containerRect = container.getBoundingClientRect();
       const rowRect = row.getBoundingClientRect();
       setBox({ top: rowRect.top - containerRect.top, height: rowRect.height });
       setVisible(true);
     };
+
     const hide = () => setVisible(false);
+
     const hideOnBlur = (event: FocusEvent) => {
       if (!(event.relatedTarget instanceof Node) || !container.contains(event.relatedTarget)) setVisible(false);
     };
@@ -32,6 +36,7 @@ export function GlideMenu({ children, className }: { children: ReactNode; classN
     container.addEventListener('focusin', moveTo);
     container.addEventListener('mouseleave', hide);
     container.addEventListener('focusout', hideOnBlur);
+
     return () => {
       container.removeEventListener('mouseover', moveTo);
       container.removeEventListener('focusin', moveTo);

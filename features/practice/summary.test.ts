@@ -16,6 +16,7 @@ describe('summarizeRun', () => {
       sections,
       { kind: 'section-loop', sectionId: 'part-2', minutes: 9, sessionId: null, reason: 'weak-section' },
     );
+
     expect(line).toBe('4 peeks, 1:10 over in part 2. Next: loop part 2.');
   });
 
@@ -27,6 +28,7 @@ describe('summarizeRun', () => {
       sessionId: null,
       reason: 'recorded',
     });
+
     expect(line).toBe('No peeks, on time. Next: recorded run.');
   });
 
@@ -38,6 +40,7 @@ describe('summarizeRun', () => {
       sessionId: 'planned',
       reason: 'planned',
     });
+
     expect(line).toBe('1 peek, on time. Next: Q&A drill.');
   });
 });

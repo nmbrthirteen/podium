@@ -33,11 +33,13 @@ export function DebriefForm({
   const initialWork = splitNote(initial.workOn, workOnChoices('talk'));
   const [view, setView] = useState<'locked' | 'steps' | 'summary'>(saved ? 'summary' : locked ? 'locked' : 'steps');
   const [step, setStep] = useState(0);
+
   const [values, setValues] = useState<DebriefValues>({
     excelled: initial.excelled,
     workOn: initialWork.choice,
     challenge: initial.challenge,
   });
+
   const [note, setNote] = useState(initialWork.note);
   const [confidence, setConfidence] = useState<number | null>(initial.confidence);
   const [items, setItems] = useState(initialQuestions);
@@ -48,6 +50,7 @@ export function DebriefForm({
   const save = () =>
     startTransition(async () => {
       if (confidence === null) return;
+
       try {
         await saveTalkDebrief(talkId, {
           ...values,

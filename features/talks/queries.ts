@@ -37,6 +37,7 @@ function emptyBrief(talkId: string): Brief {
 export async function loadTalkBundle(talkId: string, userId: string) {
   const db = await database();
   const talk = await db.query.talks.findFirst({ where: and(eq(talks.id, talkId), eq(talks.userId, userId)) });
+
   if (!talk) return null;
 
   const [brief, talkPoints, talkSections, deck, sessions, talkRuns, talkQuestions, debrief, drafts] = await Promise.all(
@@ -102,11 +103,13 @@ export type TalkSummary = {
 
 export async function listTalkSummaries(userId: string): Promise<TalkSummary[]> {
   const db = await database();
+
   const rows = await db
     .select({ id: talks.id })
     .from(talks)
     .where(eq(talks.userId, userId))
     .orderBy(asc(talks.startsAt));
+
   const today = toDay(new Date());
   const bundles = await Promise.all(rows.map(row => loadTalkBundle(row.id, userId)));
 
@@ -133,5 +136,6 @@ export async function listTalkSummaries(userId: string): Promise<TalkSummary[]> 
   const upcoming = active.filter(summary => summary.next.action === 'practice' || summary.next.action === 'present');
   const past = active.filter(summary => summary.next.action === 'debrief' || summary.next.action === 'done').reverse();
   const finished = summaries.filter(summary => summary.done).reverse();
+
   return [...upcoming, ...past, ...finished];
 }

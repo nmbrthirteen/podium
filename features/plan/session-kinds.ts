@@ -26,11 +26,13 @@ export const sessionKindHints: Record<SessionKind, string> = {
 
 export function sentenceLabel(kind: SessionKind) {
   const label = sessionKindLabels[kind];
+
   return label.startsWith('Q&A') ? label : label.charAt(0).toLowerCase() + label.slice(1);
 }
 
 export function inSentence(title: string) {
   const second = title.charAt(1);
+
   return second && second === second.toLowerCase() ? title.charAt(0).toLowerCase() + title.slice(1) : title;
 }
 

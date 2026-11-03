@@ -48,6 +48,7 @@ export function BriefEditor({ talk, brief, points, questions, draftFailed, onRul
     recoveryLine: brief.recoveryLine,
     backPocketQuestion: brief.backPocketQuestion,
   }));
+
   const [pointList, setPointList] = useState<EditablePoint[]>(points);
 
   const context = toBriefContext(talk, values, pointList);
@@ -55,6 +56,7 @@ export function BriefEditor({ talk, brief, points, questions, draftFailed, onRul
 
   const line = (field: BriefTextField) => {
     const spec = lines[field];
+
     return (
       <BriefLine
         name={field}

@@ -12,6 +12,7 @@ export async function savePredictedQuestions(talkId: string, rawQuestions: strin
   const list = z.array(z.string().trim().min(1).max(500)).max(10).parse(rawQuestions);
   const { db } = await requireTalkAccess(talkId);
   await db.delete(questions).where(and(eq(questions.talkId, talkId), eq(questions.source, 'predicted')));
+
   if (list.length === 0) return;
   const now = new Date().toISOString();
   await db
@@ -43,7 +44,7 @@ export async function saveDrillAudience(talkId: string, audience: string) {
   const value = z.string().trim().max(2000).parse(audience);
   const { db } = await requireTalkAccess(talkId);
   const brief = await db.query.briefs.findFirst({ where: eq(briefs.talkId, talkId) });
-  const fieldSources = { ...(brief?.fieldSources ?? {}), audience: 'user' as const };
+  const fieldSources = { ...brief?.fieldSources, audience: 'user' as const };
   await db
     .insert(briefs)
     .values({ talkId, audience: value, fieldSources })
@@ -53,9 +54,10 @@ export async function saveDrillAudience(talkId: string, audience: string) {
 export async function finishDrill(talkId: string, sessionId: string | null, backPocketQuestion: string) {
   const question = z.string().trim().max(500).parse(backPocketQuestion);
   const { db } = await requireTalkAccess(talkId);
+
   if (question) {
     const brief = await db.query.briefs.findFirst({ where: eq(briefs.talkId, talkId) });
-    const fieldSources = { ...(brief?.fieldSources ?? {}), backPocketQuestion: 'user' as const };
+    const fieldSources = { ...brief?.fieldSources, backPocketQuestion: 'user' as const };
     await db
       .insert(briefs)
       .values({ talkId, backPocketQuestion: question, fieldSources })

@@ -50,6 +50,7 @@ export function HoldButton({ children, onComplete, className }: HoldButtonProps)
       onKeyDown={event => {
         if (!isHoldKey(event.key)) return;
         event.preventDefault();
+
         if (!event.repeat) start();
       }}
       onKeyUp={event => {

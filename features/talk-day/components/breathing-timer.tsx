@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { SegmentedControl } from '@/components/ui/segmented-control';
@@ -13,6 +13,7 @@ const patternOptions: { value: BreathingPattern; label: string }[] = [
   { value: 'box', label: 'Box, 4-4-4-4' },
   { value: 'slow', label: 'Slow, 6 per minute' },
 ];
+
 const durationOptions = [
   { value: '2', label: '2 minutes' },
   { value: '5', label: '5 minutes' },
@@ -24,11 +25,22 @@ const defaultPrefs: z.infer<typeof prefsSchema> = { pattern: 'box', minutes: '2'
 export function BreathingTimer() {
   const [prefs, setPrefs] = useStoredState('breathing-prefs', defaultPrefs, prefsSchema);
   const [startedAt, setStartedAt] = useState<number | null>(null);
-  const now = useNow(startedAt !== null);
+  const [ended, setEnded] = useState(false);
+  const now = useNow(startedAt !== null && !ended);
   const totalSeconds = Number(prefs.minutes) * 60;
   const elapsed = startedAt === null ? 0 : (now - startedAt) / 1000;
   const finished = startedAt !== null && elapsed >= totalSeconds;
   const running = startedAt !== null && !finished;
+
+  useEffect(() => {
+    if (finished) setEnded(true);
+  }, [finished]);
+
+  const begin = () => {
+    setEnded(false);
+    setStartedAt(Date.now());
+  };
+
   const phase = breathPhaseAt(prefs.pattern, elapsed);
 
   return (
@@ -49,6 +61,7 @@ export function BreathingTimer() {
           options={durationOptions}
           onValueChange={minutes => {
             const match = durationOptions.find(option => option.value === minutes);
+
             if (match) setPrefs({ ...prefs, minutes: match.value === '5' ? '5' : '2' });
             setStartedAt(null);
           }}
@@ -77,7 +90,7 @@ export function BreathingTimer() {
             Stop breathing timer
           </Button>
         ) : (
-          <Button variant="primary" onClick={() => setStartedAt(Date.now())}>
+          <Button variant="primary" onClick={begin}>
             {finished ? 'Breathe again' : `Start ${prefs.minutes} minutes`}
           </Button>
         )}

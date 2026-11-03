@@ -41,6 +41,7 @@ export function RunStage({ kind, cards, recording, onEnd }: RunStageProps) {
 
   useEffect(() => {
     nextRef.current?.focus();
+
     return () => {
       if (hideTimer.current) clearTimeout(hideTimer.current);
     };
@@ -56,21 +57,25 @@ export function RunStage({ kind, cards, recording, onEnd }: RunStageProps) {
 
   const { index } = clock;
   const card = cards[index];
+
   if (!card) return null;
 
   const clearHide = () => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
     hideTimer.current = null;
   };
+
   const hide = () => {
     clearHide();
     setRevealed(false);
   };
+
   const peek = () => {
     clearHide();
     setRevealed(true);
     setPeeks(current => current.map((count, position) => (position === index ? count + 1 : count)));
   };
+
   const peekForAWhile = () => {
     peek();
     hideTimer.current = setTimeout(() => setRevealed(false), tapRevealMs);
@@ -98,8 +103,10 @@ export function RunStage({ kind, cards, recording, onEnd }: RunStageProps) {
       clock.bank();
       hide();
       setLoopCount(count => count + 1);
+
       return;
     }
+
     if (index >= cards.length - 1) end();
     else goTo(index + 1);
   };
@@ -113,6 +120,7 @@ export function RunStage({ kind, cards, recording, onEnd }: RunStageProps) {
   const sectionSeconds = loop
     ? (now - clock.sectionStartedAt) / 1000
     : (clock.elapsed.current[index] ?? 0) + (now - clock.sectionStartedAt) / 1000;
+
   const sectionBudget = card.minutes * 60;
   const runSeconds = (now - runStartedAt) / 1000;
   const runBudget = cards.reduce((sum, item) => sum + item.minutes * 60, 0) * (loop ? loopCount : 1);
@@ -172,6 +180,7 @@ export function RunStage({ kind, cards, recording, onEnd }: RunStageProps) {
           onPointerUp={() => {
             const held = Date.now() - (pressStartedAt.current ?? Date.now());
             pressStartedAt.current = null;
+
             if (held < tapThresholdMs) hideTimer.current = setTimeout(() => setRevealed(false), tapRevealMs);
             else hide();
           }}

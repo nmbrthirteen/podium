@@ -14,8 +14,10 @@ import { DeckError } from './extracted-slide';
 export async function canUploadDeckFor(talkId: string, userId: string) {
   const db = await database();
   const talk = await db.query.talks.findFirst({ where: eq(talks.id, talkId) });
+
   if (talk) return talk.userId === userId;
   const existing = await db.select({ userId: decks.userId }).from(decks).where(eq(decks.talkId, talkId));
+
   return existing.every(deck => deck.userId === userId);
 }
 
@@ -26,7 +28,9 @@ export async function saveDeck(
   thumbnails: Map<number, File>,
 ): Promise<SavedDeck> {
   const kind = deckKindOf(file.name);
+
   if (!kind) throw new DeckError('Upload a PPTX or PDF. Keynote and Google Slides decks need to be exported first.');
+
   if (file.size > maxDeckBytes) throw new DeckError('This deck is over 100 MB. Export a smaller copy, then upload it.');
 
   const data = new Uint8Array(await file.arrayBuffer());
@@ -39,9 +43,11 @@ export async function saveDeck(
   await writeFile(path.join(deckDir, storedName), data);
 
   const thumbnailPaths = new Map<number, string>();
+
   if (kind === 'pdf') {
     for (const slide of extracted) {
       const thumbnail = thumbnails.get(slide.number);
+
       if (thumbnail?.type !== 'image/png') continue;
       const relative = path.posix.join('decks', talkId, 'thumbs', `${slide.number}.png`);
       await writeFile(dataPath(relative), new Uint8Array(await thumbnail.arrayBuffer()));
@@ -53,11 +59,13 @@ export async function saveDeck(
   const deckId = newId();
   await db.transaction(async tx => {
     const previous = await tx.select({ id: decks.id }).from(decks).where(eq(decks.talkId, talkId));
+
     if (previous.length > 0) {
       const previousIds = previous.map(deck => deck.id);
       await tx.delete(slides).where(inArray(slides.deckId, previousIds));
       await tx.delete(decks).where(inArray(decks.id, previousIds));
     }
+
     await tx.insert(decks).values({
       id: deckId,
       talkId,

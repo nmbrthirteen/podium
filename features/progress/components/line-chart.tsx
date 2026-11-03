@@ -18,6 +18,7 @@ const margin = { top: 16, right: 24, bottom: 32, left: 40 };
 function niceMax(max: number) {
   if (max <= 5) return 5;
   const step = 10 ** Math.floor(Math.log10(max));
+
   return Math.ceil(max / step) * step;
 }
 
@@ -28,25 +29,33 @@ export function LineChart({ title, valueName, points, maxValue }: LineChartProps
 
   useEffect(() => {
     const element = containerRef.current;
+
     if (!element) return;
+
     const observer = new ResizeObserver(([entry]) => {
       if (entry) setWidth(Math.max(240, entry.contentRect.width));
     });
+
     observer.observe(element);
+
     return () => observer.disconnect();
   }, []);
 
   const yMax = maxValue ?? niceMax(Math.max(...points.map(point => point.value), 1));
   const innerWidth = width - margin.left - margin.right;
+
   const x = (index: number) =>
     margin.left + (points.length === 1 ? innerWidth / 2 : (index * innerWidth) / (points.length - 1));
+
   const y = (value: number) => margin.top + plotHeight - (value / yMax) * plotHeight;
   const ticks = [0, Math.round(yMax / 2), yMax];
   const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'}${x(index)},${y(point.value)}`).join(' ');
 
   useEffect(() => {
     const element = containerRef.current;
+
     if (!element) return;
+
     const move = (event: PointerEvent) => {
       const bounds = element.getBoundingClientRect();
       const offset = event.clientX - bounds.left;
@@ -56,9 +65,11 @@ export function LineChart({ title, valueName, points, maxValue }: LineChartProps
       });
       setActive(points.length > 0 ? nearest : null);
     };
+
     const leave = () => setActive(null);
     element.addEventListener('pointermove', move);
     element.addEventListener('pointerleave', leave);
+
     return () => {
       element.removeEventListener('pointermove', move);
       element.removeEventListener('pointerleave', leave);

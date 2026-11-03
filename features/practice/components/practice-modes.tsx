@@ -35,6 +35,7 @@ export function PracticeModes({ talkId, lengthMinutes, sections }: PracticeModes
 
   const tileBody = (kind: SessionKind, minutesLabel: string) => {
     const Icon = sessionKindIcons[kind];
+
     return (
       <>
         <span className="flex items-center justify-between gap-2">
@@ -54,6 +55,7 @@ export function PracticeModes({ talkId, lengthMinutes, sections }: PracticeModes
       {modeKinds.map(kind => {
         if (kind === 'section-loop') {
           const longest = Math.max(0, ...sections.map(section => section.minutes));
+
           return (
             <li key={kind}>
               <Menu>
@@ -79,6 +81,7 @@ export function PracticeModes({ talkId, lengthMinutes, sections }: PracticeModes
             </li>
           );
         }
+
         return (
           <li key={kind}>
             <button type="button" disabled={pendingKind !== null} onClick={() => start(kind)} className={tileClass}>

@@ -6,10 +6,12 @@ import type { TalkType } from '@/lib/domain';
 
 export async function pastSurprisingQuestions(type: TalkType, excludeTalkId: string, userId: string) {
   const db = await database();
+
   const sameType = await db
     .select({ id: talks.id })
     .from(talks)
     .where(and(eq(talks.type, type), eq(talks.userId, userId), ne(talks.id, excludeTalkId)));
+
   if (sameType.length === 0) return [];
 
   const rows = await db
@@ -25,5 +27,6 @@ export async function pastSurprisingQuestions(type: TalkType, excludeTalkId: str
         eq(questions.surprised, true),
       ),
     );
+
   return [...new Set(rows.map(row => row.question.trim()).filter(Boolean))];
 }

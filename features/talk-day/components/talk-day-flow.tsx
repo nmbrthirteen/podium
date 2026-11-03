@@ -14,6 +14,7 @@ import { BreathingTimer } from './breathing-timer';
 import { type CheckId, checkIds, TalkDayChecklist } from './talk-day-checklist';
 
 const routineSchema = z.object({ breathed: z.boolean(), checks: z.array(z.enum(checkIds)) });
+
 type Routine = z.infer<typeof routineSchema>;
 
 type TalkDayFlowProps = {

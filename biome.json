@@ -10,6 +10,7 @@
       "!**/.next",
       "!**/data",
       "!lib/db/migrations",
+      "!tools/oxlint/anti-slop",
       "!**/test-results",
       "!**/playwright-report",
       "!next-env.d.ts",

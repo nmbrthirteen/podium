@@ -8,9 +8,11 @@ import type { FrameData } from './frame';
 export async function loadFrame(): Promise<FrameData | null> {
   await connection();
   const user = await currentUser();
+
   if (!user) return null;
 
   const talks = await listTalkSummaries(user.id);
+
   return {
     hosted: isHosted(),
     talks: talks.map(talk => ({

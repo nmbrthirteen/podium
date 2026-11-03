@@ -7,6 +7,7 @@ const lengths = [2, 3, 5, 7, 10, 12, 15, 20, 25, 30, 45, 60, 90];
 describe('scaleTemplate', () => {
   for (const type of talkTypes) {
     if (type === 'interview-panel') continue;
+
     for (const length of lengths) {
       it(`${type} sums to ${length} minutes`, () => {
         const sections = scaleTemplate(type, length);

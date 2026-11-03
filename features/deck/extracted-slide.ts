@@ -15,6 +15,7 @@ export function toExtractedSlide(number: number, text: string, notes: string): E
 
 export function slideTitle(slide: { number: number; text: string }) {
   const firstLine = slide.text.split('\n').find(line => line.trim());
+
   return firstLine?.trim().slice(0, 120) || `Slide ${slide.number}`;
 }
 

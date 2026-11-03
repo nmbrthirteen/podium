@@ -48,11 +48,13 @@ export function QaDrill({ talkId, sessionId, context, pastSurprising, backPocket
     const output = await predict.run({ brief: { ...context, audience }, pastSurprising });
     const predicted = (output?.questions ?? []).map(item => ({ ...item, fromPastTalk: false }));
     const merged = [...pastItems, ...predicted].slice(0, drillLength);
+
     if (output)
       await savePredictedQuestions(
         talkId,
         predicted.map(item => item.question),
       );
+
     if (merged.length === 0) return;
     setItems(merged);
     setPhase('questions');
@@ -61,6 +63,7 @@ export function QaDrill({ talkId, sessionId, context, pastSurprising, backPocket
   if (phase === 'setup') {
     const coachFailed = predict.state.status === 'error';
     const manualItems = [...pastItems, ...items].slice(0, drillLength);
+
     return (
       <div className="flex flex-col gap-8">
         <EditableLine
@@ -118,7 +121,9 @@ export function QaDrill({ talkId, sessionId, context, pastSurprising, backPocket
 
   if (phase === 'questions') {
     const item = items[current];
+
     if (!item) return null;
+
     return (
       <DrillQuestion
         key={`${current}-${item.question}`}
@@ -129,6 +134,7 @@ export function QaDrill({ talkId, sessionId, context, pastSurprising, backPocket
         total={items.length}
         onSaved={() => {
           setAnswered(count => count + 1);
+
           if (current + 1 >= items.length) setPhase('wrap');
           else setCurrent(current + 1);
         }}

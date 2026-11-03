@@ -22,6 +22,7 @@ export function LevelPicker({ label, value, levels = 5, lowLabel, highLabel, onC
       <div className="flex h-20 items-end gap-2">
         {all.map(level => {
           const filled = value !== null && level <= value;
+
           return (
             <label
               key={level}

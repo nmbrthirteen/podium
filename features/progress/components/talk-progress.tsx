@@ -4,6 +4,7 @@ import { LineChart } from './line-chart';
 
 export function TalkProgress({ runs }: { runs: Run[] }) {
   const progress = talkProgress(runs);
+
   if (progress.peeksPerRun.length < 2) return null;
 
   return (
@@ -19,7 +20,10 @@ export function TalkProgress({ runs }: { runs: Run[] }) {
 function trend(values: number[]) {
   const first = values[0] ?? 0;
   const last = values.at(-1) ?? 0;
+
   if (last < first) return 'down';
+
   if (last > first) return 'up';
+
   return 'flat';
 }

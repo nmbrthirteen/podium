@@ -21,17 +21,21 @@ export function AuthForm({ mode, googleEnabled }: AuthFormProps) {
   const submit = () =>
     startTransition(async () => {
       setError(null);
+
       const result = signingUp
         ? await authClient.signUp.email({ name: name.trim() || email, email, password })
         : await authClient.signIn.email({ email, password });
+
       if (result.error) {
         setError(
           signingUp
             ? `The account was not created: ${result.error.message ?? 'check the email and password'}. Try again.`
             : 'The email or password did not match. Check both, then sign in again.',
         );
+
         return;
       }
+
       router.push('/');
       router.refresh();
     });

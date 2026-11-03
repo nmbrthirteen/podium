@@ -18,6 +18,7 @@ export function SetupGuide({ talkId, slideCount, steps }: SetupGuideProps) {
     cards: hasDeck ? 'Link cards to your slides' : 'Shape your cue cards',
     run: 'Do a first run',
   };
+
   const hrefs: Record<SetupStepId, string> = {
     slides: `/talks/${talkId}/cards#slides-heading`,
     brief: `/talks/${talkId}/brief`,
@@ -39,6 +40,7 @@ export function SetupGuide({ talkId, slideCount, steps }: SetupGuideProps) {
       <ol className={cn('grid gap-2', steps.length === 4 ? 'sm:grid-cols-4' : 'sm:grid-cols-3')}>
         {steps.map((step, index) => {
           const isCurrent = step.id === current;
+
           return (
             <li key={step.id}>
               <Link

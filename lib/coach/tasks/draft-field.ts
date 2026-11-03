@@ -4,6 +4,7 @@ import { defineTask } from '../task';
 import { briefContextSchema, describeBrief } from './brief-context';
 
 const draftableFields = ['goal', 'audience', 'bigIdea', 'openingLine', 'closingLine', 'recoveryLine'] as const;
+
 export type DraftableField = (typeof draftableFields)[number];
 
 export const fieldGuides: Record<DraftableField, string> = {

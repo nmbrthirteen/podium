@@ -160,11 +160,12 @@ export const coachCache = sqliteTable(
     id: text('id').primaryKey(),
     task: text('task').notNull(),
     inputHash: text('input_hash').notNull(),
+    talkId: text('talk_id').notNull().default(''),
     provider: text('provider').notNull(),
     output: text('output', { mode: 'json' }).$type<unknown>().notNull(),
     createdAt: text('created_at').notNull(),
   },
-  table => [uniqueIndex('coach_cache_task_input').on(table.task, table.inputHash)],
+  table => [uniqueIndex('coach_cache_task_input').on(table.task, table.inputHash, table.talkId)],
 );
 
 export const settings = sqliteTable('settings', {
@@ -264,13 +265,23 @@ export const authVerifications = sqliteTable(
 );
 
 export type Talk = typeof talks.$inferSelect;
+
 export type Brief = typeof briefs.$inferSelect;
+
 export type Point = typeof points.$inferSelect;
+
 export type Section = typeof sections.$inferSelect;
+
 export type Deck = typeof decks.$inferSelect;
+
 export type Slide = typeof slides.$inferSelect;
+
 export type SlideDraft = typeof slideDrafts.$inferSelect;
+
 export type Question = typeof questions.$inferSelect;
+
 export type PlanSession = typeof planSessions.$inferSelect;
+
 export type Run = typeof runs.$inferSelect;
+
 export type TalkDebrief = typeof talkDebriefs.$inferSelect;

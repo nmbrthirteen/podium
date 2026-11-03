@@ -18,6 +18,7 @@ export function AddLineInput({ label, placeholder, buttonLabel = 'Add', onAdd, c
 
   const add = () => {
     const text = draft.trim();
+
     if (!text) return;
     onAdd(text);
     setDraft('');

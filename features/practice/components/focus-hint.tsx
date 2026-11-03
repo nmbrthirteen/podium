@@ -12,6 +12,7 @@ type FocusHintProps = { talkId: string; focus: string; reason: string; kind: Ses
 export function FocusHint({ talkId, focus, reason, kind }: FocusHintProps) {
   const [hidden, setHidden] = useState(false);
   const [pending, startTransition] = useTransition();
+
   if (hidden) return null;
 
   return (

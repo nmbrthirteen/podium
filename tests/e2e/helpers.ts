@@ -13,6 +13,8 @@ export async function addTalk(page: Page, title: string) {
   await page.waitForURL(/\/talks\/[\w-]+\/plan$/);
   await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
   const match = page.url().match(/\/talks\/([\w-]+)\/plan$/);
+
   if (!match?.[1]) throw new Error(`Could not read the talk id from ${page.url()}`);
+
   return match[1];
 }

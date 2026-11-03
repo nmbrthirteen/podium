@@ -26,7 +26,8 @@ const findings = [
 const stages = [
   {
     name: 'Prepare',
-    detail: 'Upload a deck or answer 3 questions. Rule checks point at what hurts a talk, one fix at a time.',
+    detail:
+      'Upload a deck or describe your talk in a sentence. Rule checks point at what hurts a talk, one fix at a time.',
     sample: 'Your big idea has 22 words. Cut it to 15 or fewer.',
   },
   {
@@ -58,8 +59,8 @@ export function LandingPage() {
               Rehearse your next talk out loud until it holds under pressure.
             </h1>
             <p className="max-w-prose text-lg text-muted">
-              Upload your deck or answer 3 questions. {brand.name} builds the brief, cue cards, and a spoken rehearsal
-              plan, then coaches every run.
+              Upload your deck or describe your talk in a sentence. {brand.name} builds the brief, cue cards, and a
+              spoken rehearsal plan, then coaches every run.
             </p>
             <Link href="/sign-up" className={buttonVariants({ variant: 'primary', size: 'lg' })}>
               Start free

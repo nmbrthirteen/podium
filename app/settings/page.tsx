@@ -11,6 +11,7 @@ export const metadata: Metadata = { title: 'Settings' };
 
 export default async function SettingsPage() {
   await connection();
+
   if (isHosted()) redirect('/account');
   const [statuses, preference] = await Promise.all([providerStatuses(), providerPreference()]);
 

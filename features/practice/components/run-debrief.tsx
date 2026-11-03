@@ -46,12 +46,15 @@ export function RunDebrief({
   const save = () =>
     startTransition(async () => {
       try {
-        await saveRunDebrief(runId, {
+        const debrief: Parameters<typeof saveRunDebrief>[1] = {
           ...values,
           workOn: recorded || listener ? values.workOn : joinNote(values.workOn, note),
-          ...(recorded ? { observation: note } : {}),
-          ...(listener ? { listenerFeedback: note } : {}),
-        });
+        };
+
+        if (recorded) debrief.observation = note;
+
+        if (listener) debrief.listenerFeedback = note;
+        await saveRunDebrief(runId, debrief);
         onSaved();
       } catch {
         setError('The debrief did not save. Check that the app is running, then save again.');
@@ -84,11 +87,14 @@ export function RunDebrief({
               playsInline
               onLoadedMetadata={event => {
                 const video = event.currentTarget;
+
                 if (Number.isFinite(video.duration)) return;
+
                 const rewind = () => {
                   video.removeEventListener('durationchange', rewind);
                   video.currentTime = 0;
                 };
+
                 video.addEventListener('durationchange', rewind);
                 video.currentTime = Number.MAX_SAFE_INTEGER;
               }}

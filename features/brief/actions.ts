@@ -27,14 +27,17 @@ export async function applyBriefDraft(talkId: string, raw: z.input<typeof briefD
   const { db } = await requireTalkAccess(talkId);
 
   const brief = await db.query.briefs.findFirst({ where: eq(briefs.talkId, talkId) });
-  const sources = { ...(brief?.fieldSources ?? {}) };
+  const sources = { ...brief?.fieldSources };
   const patch: Partial<Brief> = {};
+
   for (const field of draftedFields) {
     const value = draft[field].trim();
+
     if (!value || brief?.[field].trim()) continue;
     patch[field] = value;
     sources[field] = 'coach-draft';
   }
+
   if (Object.keys(patch).length > 0) {
     patch.fieldSources = sources;
     await db
@@ -45,6 +48,7 @@ export async function applyBriefDraft(talkId: string, raw: z.input<typeof briefD
 
   const existing = await db.select({ id: points.id }).from(points).where(eq(points.talkId, talkId));
   const drafted = draft.points.filter(point => point.text.trim());
+
   if (existing.length === 0 && drafted.length > 0) {
     await db.insert(points).values(
       drafted.map((point, position) => ({
@@ -57,12 +61,14 @@ export async function applyBriefDraft(talkId: string, raw: z.input<typeof briefD
       })),
     );
   }
+
   revalidateTalk(talkId);
 
   const [savedBrief, savedPoints] = await Promise.all([
     db.query.briefs.findFirst({ where: eq(briefs.talkId, talkId) }),
     db.select().from(points).where(eq(points.talkId, talkId)).orderBy(asc(points.position)),
   ]);
+
   return { brief: savedBrief ?? null, points: savedPoints };
 }
 
@@ -73,7 +79,7 @@ export async function saveBriefField(talkId: string, rawField: BriefTextField, r
   const { db } = await requireTalkAccess(talkId);
 
   const current = await db.query.briefs.findFirst({ where: eq(briefs.talkId, talkId) });
-  const sources = { ...(current?.fieldSources ?? {}), [field]: source };
+  const sources = { ...current?.fieldSources, [field]: source };
   const patch: Partial<Brief> = { fieldSources: sources };
   patch[field] = value;
 
@@ -108,7 +114,7 @@ export async function saveTalkDetails(talkId: string, rawPatch: z.input<typeof t
 
   if (patch.title !== undefined) {
     const brief = await db.query.briefs.findFirst({ where: eq(briefs.talkId, talkId) });
-    const sources = { ...(brief?.fieldSources ?? {}), title: 'user' as const };
+    const sources = { ...brief?.fieldSources, title: 'user' as const };
     await db
       .insert(briefs)
       .values({ talkId, fieldSources: sources })
@@ -116,6 +122,7 @@ export async function saveTalkDetails(talkId: string, rawPatch: z.input<typeof t
   }
 
   const typeChanged = patch.type !== undefined && patch.type !== talk.type;
+
   if (typeChanged) await replaceSectionsWithTemplate(db, talkId);
 
   const planChanged =
@@ -123,6 +130,7 @@ export async function saveTalkDetails(talkId: string, rawPatch: z.input<typeof t
     (patch.startsAt !== undefined && patch.startsAt !== talk.startsAt) ||
     (patch.lengthMinutes !== undefined && patch.lengthMinutes !== talk.lengthMinutes) ||
     (patch.depth !== undefined && patch.depth !== talk.depth);
+
   if (planChanged) await rebuildPlan(db, talkId);
 
   revalidateTalk(talkId);
@@ -134,6 +142,7 @@ export async function addPoint(talkId: string) {
   const point = { id: newId(), talkId, position: existing.length, text: '', example: '', source: 'user' as const };
   await db.insert(points).values(point);
   revalidateTalk(talkId);
+
   return point;
 }
 
@@ -142,6 +151,7 @@ export async function savePoint(talkId: string, pointId: string, rawPatch: { tex
     .object({ text: z.string().max(1000), example: z.string().max(1000) })
     .partial()
     .parse(rawPatch);
+
   const { db } = await requireTalkAccess(talkId);
   await db
     .update(points)

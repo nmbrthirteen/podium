@@ -7,6 +7,8 @@ export function databaseConfig(env: AppEnv, cwd = process.cwd()): DatabaseConfig
   if (env.TURSO_DATABASE_URL) {
     return { url: env.TURSO_DATABASE_URL, authToken: env.TURSO_AUTH_TOKEN, local: false };
   }
+
   const dataDir = env.PODIUM_DATA_DIR ?? path.join(cwd, 'data');
+
   return { url: `file:${path.join(dataDir, 'podium.db').replaceAll('\\', '/')}`, local: true };
 }

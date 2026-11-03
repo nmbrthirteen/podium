@@ -10,6 +10,7 @@ describe('structureRules', () => {
         { id: 's2', minutes: 6, keywords: [] },
       ],
     });
+
     expect(issue?.message).toBe('Sections add up to 14 minutes. The talk is 10.');
     expect(issue?.action).toEqual({ kind: 'open', panel: 'structure', label: 'Open structure' });
   });

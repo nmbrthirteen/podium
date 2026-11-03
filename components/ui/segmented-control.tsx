@@ -30,6 +30,7 @@ export function SegmentedControl<T extends string>({
       value={value}
       onValueChange={next => {
         const match = options.find(option => option.value === next);
+
         if (match) onValueChange(match.value);
       }}
       className={cn('flex flex-wrap gap-1 rounded-card bg-inset p-1', className)}

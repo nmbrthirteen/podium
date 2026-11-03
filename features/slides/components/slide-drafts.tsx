@@ -47,6 +47,7 @@ export function SlideDrafts({ talkId, sections, drafts: initialDrafts, context, 
       },
       { fresh: drafts.length > 0 },
     );
+
     if (!output) return;
     setDrafts(await replaceSlideDrafts(talkId, output.slides));
   };
@@ -90,11 +91,12 @@ export function SlideDrafts({ talkId, sections, drafts: initialDrafts, context, 
   }
 
   const placed = new Set(sectionIds);
-  const groups = [
+
+  const groups: { key: string; title: string; minutes: number | null; items: SlideDraft[] }[] = [
     ...sections.map(section => ({
       key: section.id,
       title: section.title,
-      minutes: section.minutes as number | null,
+      minutes: section.minutes,
       items: ordered.filter(draft => draft.sectionId === section.id),
     })),
     {

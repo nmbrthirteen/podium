@@ -5,12 +5,13 @@ import { eq, inArray } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { rebuildPlan } from '@/features/plan/rebuild-plan';
-import { fixedKey, focusKey } from '@/features/practice/next-focus';
+import { failedKey, fixedKey, focusKey } from '@/features/practice/next-focus';
 import { requireUserId } from '@/lib/auth/current-user';
 import { requireTalkAccess } from '@/lib/auth/talk-access';
 import { database } from '@/lib/db/client';
 import {
   briefs,
+  coachCache,
   decks,
   planSessions,
   points,
@@ -53,6 +54,7 @@ export type CreateTalkInput = z.input<typeof createTalkSchema>;
 
 export async function createTalk(raw: CreateTalkInput): Promise<{ error: string }> {
   const parsed = createTalkSchema.safeParse(raw);
+
   if (!parsed.success) {
     return { error: 'The talk could not be added. Shorten the description, then try again.' };
   }
@@ -64,9 +66,11 @@ export async function createTalk(raw: CreateTalkInput): Promise<{ error: string 
   const db = await database();
 
   const existing = await db.query.talks.findFirst({ where: eq(talks.id, id) });
+
   if (existing) return { error: 'This talk already exists. Go back home to open it.' };
 
   const draftDeck = await db.query.decks.findFirst({ where: eq(decks.talkId, id) });
+
   if (draftDeck && draftDeck.userId !== userId) {
     return { error: 'This deck belongs to another account. Upload the deck again, then add the talk.' };
   }
@@ -97,6 +101,7 @@ export async function createTalk(raw: CreateTalkInput): Promise<{ error: string 
     });
 
     const talkPoints = input.points.filter(point => point.text.trim());
+
     if (talkPoints.length > 0) {
       await tx
         .insert(points)
@@ -104,6 +109,7 @@ export async function createTalk(raw: CreateTalkInput): Promise<{ error: string 
     }
 
     const templateSections = scaleTemplate(input.type, input.lengthMinutes);
+
     if (templateSections.length > 0) {
       await tx.insert(sections).values(
         templateSections.map((section, position) => ({
@@ -154,7 +160,10 @@ export async function deleteTalk(talkId: string) {
     await tx.delete(planSessions).where(eq(planSessions.talkId, talkId));
     await tx.delete(runs).where(eq(runs.talkId, talkId));
     await tx.delete(talkDebriefs).where(eq(talkDebriefs.talkId, talkId));
-    await tx.delete(settings).where(inArray(settings.key, [focusKey(talkId), fixedKey(talkId), setupKey(talkId)]));
+    await tx.delete(coachCache).where(eq(coachCache.talkId, talkId));
+    await tx
+      .delete(settings)
+      .where(inArray(settings.key, [focusKey(talkId), fixedKey(talkId), failedKey(talkId), setupKey(talkId)]));
     await tx.delete(talks).where(eq(talks.id, talkId));
   });
 

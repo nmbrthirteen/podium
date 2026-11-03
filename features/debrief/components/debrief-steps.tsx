@@ -49,6 +49,7 @@ export function DebriefSteps({
   const advanceSoon = () => window.setTimeout(() => onStepChange(Math.min(step + 1, stepCount - 1)), 250);
   const last = step === stepCount - 1;
   const canContinue = step !== 0 || confidence !== null;
+
   const empty =
     (step === 1 && !values.excelled) || (step === 2 && !values.workOn) || (step === 3 && items.length === 0);
 
@@ -85,6 +86,7 @@ export function DebriefSteps({
             value={values.excelled}
             onChange={excelled => {
               onValuesChange({ ...values, excelled });
+
               if (excelled) advanceSoon();
             }}
           />
@@ -96,7 +98,7 @@ export function DebriefSteps({
               legendClassName={questionClass}
               options={withCurrent(workOnChoices('talk'), values.workOn)}
               value={values.workOn}
-              onChange={workOn => onValuesChange({ ...values, workOn, challenge: challengeFor[workOn] ?? '' })}
+              onChange={workOn => onValuesChange({ ...values, workOn, challenge: challengeFor.get(workOn) ?? '' })}
             />
             {values.challenge && (
               <p className="flex items-center gap-2 font-medium">

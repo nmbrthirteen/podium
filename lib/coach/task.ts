@@ -1,4 +1,5 @@
 import type { z } from 'zod';
+import type { JsonValue } from '@/lib/json';
 
 export type CoachTaskDefinition<I extends z.ZodType, O extends z.ZodType> = {
   id: string;
@@ -9,14 +10,14 @@ export type CoachTaskDefinition<I extends z.ZodType, O extends z.ZodType> = {
 };
 
 export type CoachTask<I extends z.ZodType, O extends z.ZodType> = CoachTaskDefinition<I, O> & {
-  promptFor: (raw: unknown) => string;
+  promptFor: (raw: JsonValue) => string;
 };
 
 export type RunnableCoachTask = {
   id: string;
   schema: z.ZodType;
   system: string;
-  promptFor: (raw: unknown) => string;
+  promptFor: (raw: JsonValue) => string;
 };
 
 export function defineTask<I extends z.ZodType, O extends z.ZodType>(
