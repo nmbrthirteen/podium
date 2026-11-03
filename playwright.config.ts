@@ -16,7 +16,16 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
     trace: 'retain-on-failure',
   },
-  projects: [{ name: 'chrome', use: { ...devices['Desktop Chrome'], channel: 'chrome' } }],
+  projects: [
+    {
+      name: 'chrome',
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: 'chrome',
+        launchOptions: { chromiumSandbox: true },
+      },
+    },
+  ],
   webServer: {
     command: `bun x next dev --port ${port}`,
     env: { PODIUM_DATA_DIR: dataDir, PODIUM_COACH: 'off' },
